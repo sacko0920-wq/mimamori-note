@@ -323,7 +323,7 @@ const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSO
 const save = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
 
 /* シードバージョンが変わったら自動リセット */
-const SEED_VERSION = 'v2025-sample';
+const SEED_VERSION = 'v2026-monthly';
 if (localStorage.getItem('mmn_seed_version') !== SEED_VERSION) {
   ['mmn_persons','mmn_records','mmn_checks'].forEach(k => localStorage.removeItem(k));
   localStorage.setItem('mmn_seed_version', SEED_VERSION);
@@ -355,7 +355,7 @@ const Ic = ({ n, s = 22, c = 'currentColor' }) => {
 const SEED_PERSONS = [
   {
     id:1, name:'お父さん', relation:'父', emoji:'👨',
-    checkInterval:'毎月', lastCheckDate:'2025-06-01',
+    checkDay:'1', notifyTime:'09:00', lastCheckDate:'2025-06-01',
     consultees:[
       { id:1001, type:'doctor',   name:'青空内科クリニック',           contact:'017-111-1111', memo:'高血圧で定期受診' },
       { id:1002, type:'careman',  name:'青森居宅介護支援事業所',       contact:'017-222-2222', memo:'担当 ケアマネ山田' },
@@ -364,7 +364,7 @@ const SEED_PERSONS = [
   },
   {
     id:2, name:'お母さん', relation:'母', emoji:'👩',
-    checkInterval:'2週間ごと', lastCheckDate:'2025-06-08',
+    checkDay:'1', notifyTime:'', lastCheckDate:'2025-06-08',
     consultees:[
       { id:2001, type:'doctor',   name:'さくら整形外科',               contact:'017-444-4444', memo:'膝痛で通院中' },
       { id:2002, type:'careman',  name:'みなみ居宅介護支援事業所',     contact:'017-555-5555', memo:'担当 佐藤ケアマネ' },
@@ -399,13 +399,13 @@ const CHECK_QS = [
 const CATS = ['同じ話を繰り返す','薬の飲み忘れ','金銭管理','転倒','消し忘れ','ゴミ出しができない','食欲の変化','気分の落ち込み','外出減少','その他'];
 const SEED_CHECKS = [
   /* ── お父さん ── */
-  { id:301, personId:1, date:'2025-04-20', checkedIds:['q1'],          count:1, level:'low' },
-  { id:302, personId:1, date:'2025-05-18', checkedIds:['q1','q2'],     count:2, level:'low' },
-  { id:303, personId:1, date:'2025-06-01', checkedIds:['q1','q2','q6','q7'], count:4, level:'mid' },
+  { id:301, personId:1, date:'2025-04-20', targetMonth:'2025-04', checkedIds:['q1'],               count:1, level:'low', impression:'変わらない',       note:'特に気になることはなかった。' },
+  { id:302, personId:1, date:'2025-05-18', targetMonth:'2025-05', checkedIds:['q1','q2'],           count:2, level:'low', impression:'少し気になる',       note:'以前より同じ話を繰り返すことが増えた。薬の飲み忘れも気になる。' },
+  { id:303, personId:1, date:'2025-06-01', targetMonth:'2025-06', checkedIds:['q1','q2','q6','q7'], count:4, level:'mid', impression:'心配になってきた',   note:'最近、食欲が落ちてきたように感じる。買い物には行くが、おつりの計算を間違えることが増えた。' },
   /* ── お母さん ── */
-  { id:401, personId:2, date:'2025-04-15', checkedIds:['q3'],          count:1, level:'low' },
-  { id:402, personId:2, date:'2025-05-22', checkedIds:['q3','q7'],     count:2, level:'low' },
-  { id:403, personId:2, date:'2025-06-08', checkedIds:['q3','q7','q8'],count:3, level:'mid' },
+  { id:401, personId:2, date:'2025-04-15', targetMonth:'2025-04', checkedIds:['q3'],               count:1, level:'low', impression:'変わらない',         note:'ゴミ出しを忘れることがあった。' },
+  { id:402, personId:2, date:'2025-05-22', targetMonth:'2025-05', checkedIds:['q3','q7'],           count:2, level:'low', impression:'少し気になる',       note:'外出する回数が減ってきた。' },
+  { id:403, personId:2, date:'2025-06-08', targetMonth:'2025-06', checkedIds:['q3','q7','q8'],     count:3, level:'mid', impression:'心配になってきた',   note:'膝の調子が悪くなり、外出をほとんどしなくなった。金銭管理も少し不安。' },
 ];
 const CAT_EMOJI = { '薬の飲み忘れ':'💊','同じ話を繰り返す':'🔄','金銭管理':'💴','ゴミ出しができない':'🗑️','転倒':'⚠️','食欲の変化':'🍽️','気分の落ち込み':'💭','外出減少':'🚶','消し忘れ':'🔥','その他':'📝' };
 /* 気づき記録カテゴリ → チェック項目ID のマッピング */
@@ -432,27 +432,69 @@ const fmtDateTime  = (date, time) => `${fmtShort(date)} ${time||''}`.trim();
 const STATUS_ICON = { '安定':'🟢', '変化あり':'🟡', '要確認':'🔴', 'チェック時期':'🔔', '記録あり':'🟢', '記録なし':'⚪' };
 const statusWithIcon = label => `${STATUS_ICON[label]||'⚪'} ${label}`;
 
-/* チェック間隔（日数） */
-const CHECK_INTERVAL_DAYS = { '毎週':7, '2週間ごと':14, '毎月':30, '設定しない':null };
+/* チェック日選択肢 */
+const CHECK_DAYS = ['1','5','10','15','20','25','末'];
 
-const getDaysSince = dateStr => {
-  if (!dateStr) return null;
-  return Math.floor((Date.now() - new Date(dateStr)) / 86400000);
+/* 指定年月のチェック日（日） を返す */
+const getCheckDayNum = (checkDay, year, month) => {
+  if (checkDay === '末') return new Date(year, month, 0).getDate();
+  return Number(checkDay || '1');
 };
 
+/* 次回チェック予定日を返す */
+const getNextCheckDate = person => {
+  const today = new Date();
+  const y = today.getFullYear(), m = today.getMonth(); /* m は 0-indexed */
+  const thisYM = `${y}-${String(m+1).padStart(2,'0')}`;
+  /* 今月がまだ未チェックの場合 → 今月のチェック日 */
+  if (!person.lastCheckDate || !person.lastCheckDate.startsWith(thisYM)) {
+    const d = getCheckDayNum(person.checkDay, y, m+1);
+    return new Date(y, m, d);
+  }
+  /* 今月チェック済み → 来月のチェック日 */
+  const ny = m === 11 ? y+1 : y, nm = m === 11 ? 0 : m+1;
+  const d = getCheckDayNum(person.checkDay, ny, nm+1);
+  return new Date(ny, nm, d);
+};
+
+/* 今月チェック済みかどうか */
+const checkedThisMonth = person => {
+  const today = new Date();
+  const thisYM = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}`;
+  return !!(person.lastCheckDate && person.lastCheckDate.startsWith(thisYM));
+};
+
+/* チェック時期か（今月未チェック かつ 今日 >= チェック日） */
 const isCheckDue = person => {
-  if (person.checkInterval === '設定しない' || !person.checkInterval) return false;
-  const days      = getDaysSince(person.lastCheckDate);
-  const threshold = CHECK_INTERVAL_DAYS[person.checkInterval];
-  if (!threshold) return false;
-  return days === null || days >= threshold;
+  if (checkedThisMonth(person)) return false;
+  const today = new Date();
+  const checkDay = getCheckDayNum(person.checkDay, today.getFullYear(), today.getMonth()+1);
+  return today.getDate() >= checkDay;
 };
 
 const getCheckDueText = person => {
-  if (person.checkInterval === '設定しない' || !person.checkInterval) return null;
-  const days = getDaysSince(person.lastCheckDate);
-  if (days === null) return 'まだチェックしていません';
-  return `前回から${days}日経過`;
+  if (checkedThisMonth(person)) {
+    const next = getNextCheckDate(person);
+    return `今月のチェック済み・次回: ${next.getMonth()+1}月${next.getDate()}日`;
+  }
+  if (!person.lastCheckDate) return 'まだ生活変化チェックをしていません';
+  if (isCheckDue(person)) return '今月のチェック時期です';
+  const next = getNextCheckDate(person);
+  return `次回チェック予定: ${next.getMonth()+1}月${next.getDate()}日`;
+};
+
+/* 対象年月（"2026-07" → "2026年7月"）*/
+const fmtTargetMonth = ym => {
+  if (!ym) return '';
+  const [y, m] = ym.split('-');
+  return `${y}年${Number(m)}月`;
+};
+/* 対象期間（"2026-07" → "2026年7月1日〜2026年7月31日"）*/
+const fmtTargetPeriod = ym => {
+  if (!ym) return '';
+  const [y, m] = ym.split('-');
+  const last = new Date(Number(y), Number(m), 0).getDate();
+  return `${y}年${Number(m)}月1日〜${y}年${Number(m)}月${last}日`;
 };
 
 const getPersonStats = (person, records, checkHistory) => {
@@ -515,13 +557,32 @@ function HomeScreen({ persons, records, checkHistory, onNav, onRecordAdd }) {
       <div className="page-body">
         {/* ─ 2 big action buttons ─ */}
         <div style={{ marginBottom:4 }}>
-          <button className="action-btn" style={{ background:'var(--primary)', color:'#fff' }} onClick={() => onNav('check')}>
-            <div className="action-btn-icon" style={{ background:'rgba(255,255,255,.22)' }}>🔍</div>
-            <div>
-              <div className="action-btn-label">生活変化チェック</div>
-              <div className="action-btn-sub">最近2週間の様子を確認する</div>
-            </div>
-          </button>
+          {(() => {
+            const anyDue = persons.some(p => isCheckDue(p));
+            const checkBg   = anyDue ? '#E8924A' : 'var(--primary)';
+            const checkIcon = anyDue ? '🔔' : '🔍';
+            /* 前回チェック／次回チェック情報（最初の家族を代表表示） */
+            const firstPerson = persons[0];
+            let subLine = 'この1か月の様子を振り返りましょう';
+            if (firstPerson) {
+              if (checkedThisMonth(firstPerson)) {
+                const next = getNextCheckDate(firstPerson);
+                subLine = `次回チェック予定: ${next.getMonth()+1}月${next.getDate()}日`;
+              } else if (firstPerson.lastCheckDate) {
+                const [y,mo] = firstPerson.lastCheckDate.split('-');
+                subLine = `前回チェック: ${y}年${Number(mo)}月`;
+              }
+            }
+            return (
+              <button className="action-btn" style={{ background: checkBg, color:'#fff' }} onClick={() => onNav('check')}>
+                <div className="action-btn-icon" style={{ background:'rgba(255,255,255,.22)' }}>{checkIcon}</div>
+                <div>
+                  <div className="action-btn-label">今月の生活変化チェック</div>
+                  <div className="action-btn-sub">{subLine}</div>
+                </div>
+              </button>
+            );
+          })()}
           <button className="action-btn" style={{ background:'var(--green)', color:'#fff' }} onClick={onRecordAdd}>
             <div className="action-btn-icon" style={{ background:'rgba(255,255,255,.22)' }}>✏️</div>
             <div>
@@ -606,50 +667,33 @@ function TrendView({ person, checkHistory }) {
     </div>
   );
 
-  /* ─ 月別集計 ─ */
+  /* ─ 月別集計（targetMonth 優先、なければ date スライス） ─ */
   const monthMap = {};
   myChecks.forEach(c => {
-    const m = c.date.slice(0,7);
-    if (!monthMap[m]) monthMap[m] = { sessions:0, count:0, ids: new Set() };
-    monthMap[m].sessions += 1;          /* チェック実施回数 */
-    monthMap[m].count    += c.count;    /* 項目数合計（詳細用） */
-    c.checkedIds.forEach(id => monthMap[m].ids.add(id));
+    const m = c.targetMonth || c.date.slice(0,7);
+    if (!monthMap[m]) monthMap[m] = { count:0, ids: new Set(), impression:'', note:'' };
+    monthMap[m].count    = Math.max(monthMap[m].count, c.count || 0);
+    (c.checkedIds||[]).forEach(id => monthMap[m].ids.add(id));
+    if (c.impression) monthMap[m].impression = c.impression;
+    if (c.note)       monthMap[m].note = c.note;
   });
-  const months     = Object.keys(monthMap).sort().slice(-6);
-  const maxSessions = Math.max(...months.map(m => monthMap[m].sessions), 1);
+  const months   = Object.keys(monthMap).sort().slice(-6);
+  const maxCount = Math.max(...months.map(m => monthMap[m].count), 1);
 
-  /* ─ 項目別：何ヶ月で出現したか ─ */
-  const itemMonths = {};
-  myChecks.forEach(c => {
-    const m = c.date.slice(0,7);
-    c.checkedIds.forEach(id => {
-      const q = CHECK_QS.find(q => q.id === id);
-      if (!q) return;
-      if (!itemMonths[q.text]) itemMonths[q.text] = new Set();
-      itemMonths[q.text].add(m);
-    });
-  });
-
-  /* ─ 傾向判定（実施回数ベース） ─ */
+  /* ─ 傾向判定（気になった項目数ベース） ─ */
   const getTrend = () => {
     if (months.length < 3) return null;
     const half   = Math.floor(months.length / 2);
-    const recent = months.slice(-half).reduce((s,m) => s + monthMap[m].sessions, 0) / half;
-    const older  = months.slice(0, half).reduce((s,m) => s + monthMap[m].sessions, 0) / half;
-    if (recent > older * 1.25) return { label:'確認頻度が増えています',     color:'var(--primary)', bg:'var(--primary-bg)', icon:'📋' };
-    if (recent < older * 0.75) return { label:'確認頻度が減っています',     color:'var(--text-sub)', bg:'var(--bg)',          icon:'📋' };
-    return                             { label:'確認頻度はほぼ同じです',     color:'var(--primary)', bg:'var(--primary-bg)', icon:'📋' };
+    const recent = months.slice(-half).reduce((s,m) => s + monthMap[m].count, 0) / half;
+    const older  = months.slice(0, half).reduce((s,m) => s + monthMap[m].count, 0) / half;
+    if (recent > older * 1.25) return { label:'気になる項目が増えています',   color:'var(--accent)',   bg:'#FFF3CD', icon:'📋' };
+    if (recent < older * 0.75) return { label:'気になる項目が減っています',   color:'var(--green)',    bg:'var(--green-light)', icon:'📋' };
+    return                             { label:'気になる項目はほぼ同じです',   color:'var(--primary)', bg:'var(--primary-bg)', icon:'📋' };
   };
   const trend = getTrend();
 
-  const fmtMo = m => {
-    const [y, mo] = m.split('-');
-    return `${Number(mo)}月`;
-  };
-  const fmtMoFull = m => {
-    const [y, mo] = m.split('-');
-    return `${y}年${Number(mo)}月`;
-  };
+  const fmtMo     = m => { const [,mo] = m.split('-'); return `${Number(mo)}月`; };
+  const fmtMoFull = m => { const [y,mo] = m.split('-'); return `${y}年${Number(mo)}月`; };
 
   return (
     <>
@@ -663,19 +707,17 @@ function TrendView({ person, checkHistory }) {
         </div>
       )}
 
-      {/* ─ 月別バーチャート（実施回数） ─ */}
+      {/* ─ 月別バーチャート（気になった項目数） ─ */}
       <div className="card" style={{ marginBottom:12 }}>
-        <div className="card-title">月別生活変化チェック実施回数</div>
+        <div className="card-title">月別の気になった項目数</div>
         <div className="trend-chart">
           {months.map(m => {
-            const s   = monthMap[m].sessions;
-            const pct = Math.round((s / maxSessions) * 80);
-            /* 「要確認」レベルのチェックが過半数を占める月のみ強調 */
-            const highRisk = myChecks.filter(c => c.date.slice(0,7) === m && c.level === 'high').length;
-            const warn = highRisk > 0 && highRisk >= Math.ceil(s / 2);
+            const cnt = monthMap[m].count;
+            const pct = Math.round((cnt / maxCount) * 80);
+            const warn = cnt >= 5;
             return (
               <div key={m} className="trend-col">
-                <div className="trend-bar-num">{s}回</div>
+                <div className="trend-bar-num">{cnt}項目</div>
                 <div className={`trend-bar${warn?' warn':''}`} style={{ height: Math.max(pct, 6) + 'px', width:'100%' }} />
                 <div className="trend-bar-mo">{fmtMo(m)}</div>
               </div>
@@ -687,65 +729,45 @@ function TrendView({ person, checkHistory }) {
       {/* ─ 月別テキスト詳細 ─ */}
       <div className="card" style={{ marginBottom:12 }}>
         <div className="card-title">月別の記録</div>
-        {months.map((m, i) => {
-          const s     = monthMap[m].sessions;
-          const prev  = i > 0 ? monthMap[months[i-1]].sessions : null;
-          const diff  = prev !== null ? s - prev : null;
-          const items = [...monthMap[m].ids].map(id => CHECK_QS.find(q => q.id === id)?.text).filter(Boolean);
+        {[...months].reverse().map((m, i) => {
+          const cnt        = monthMap[m].count;
+          const items      = [...monthMap[m].ids].map(id => CHECK_QS.find(q => q.id === id)?.text).filter(Boolean);
+          const impression = monthMap[m].impression;
+          const note       = monthMap[m].note;
+          const impColor   = IMPRESSION_COLOR[impression] || 'var(--text-sub)';
           return (
-            <div key={m} style={{ padding:'10px 0', borderBottom: i < months.length-1 ? '1px solid var(--border)' : 'none' }}>
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:4 }}>
+            <div key={m} style={{ padding:'12px 0', borderBottom: i < months.length-1 ? '1px solid var(--border)' : 'none' }}>
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:6 }}>
                 <span style={{ fontSize:14, fontWeight:700, color:'var(--text)' }}>{fmtMoFull(m)}</span>
-                <span style={{ display:'flex', alignItems:'center', gap:6 }}>
-                  <span style={{ fontSize:14, fontWeight:700, color:'var(--text)' }}>
-                    {s}回
-                  </span>
-                  {diff !== null && diff !== 0 && (
-                    <span style={{ fontSize:12, color: diff > 0 ? 'var(--accent)' : 'var(--green)', fontWeight:600 }}>
-                      {diff > 0 ? `▲${diff}` : `▼${Math.abs(diff)}`}
-                    </span>
-                  )}
+                <span style={{ fontSize:13, fontWeight:700, color:'var(--text-sub)' }}>
+                  {cnt}項目
                 </span>
               </div>
+              {impression && (
+                <div style={{ fontSize:13, fontWeight:700, color: impColor, marginBottom:6 }}>
+                  全体的な印象：{impression}
+                </div>
+              )}
               {items.length > 0 && (
-                <div style={{ display:'flex', flexWrap:'wrap', gap:5 }}>
+                <div style={{ display:'flex', flexWrap:'wrap', gap:5, marginBottom: note ? 8 : 0 }}>
                   {items.map(t => (
                     <span key={t} style={{ fontSize:11, background:'var(--primary-bg)', color:'var(--primary)', padding:'3px 8px', borderRadius:12, fontWeight:500 }}>
-                      {CAT_EMOJI[t]||'●'} {t}
+                      {t}
                     </span>
                   ))}
+                </div>
+              )}
+              {note && (
+                <div style={{ fontSize:12, color:'var(--text-sub)', lineHeight:1.7,
+                  background:'var(--bg)', borderRadius:8, padding:'8px 10px',
+                  whiteSpace:'pre-wrap', wordBreak:'break-all' }}>
+                  {note}
                 </div>
               )}
             </div>
           );
         })}
       </div>
-
-      {/* ─ 項目別推移 ─ */}
-      {Object.keys(itemMonths).length > 0 && (
-        <div className="card">
-          <div className="card-title">項目別の出現状況</div>
-          {Object.entries(itemMonths)
-            .sort((a,b) => b[1].size - a[1].size)
-            .map(([text, mSet]) => {
-              const cnt = mSet.size;
-              return (
-                <div key={text} style={{ display:'flex', alignItems:'center', gap:10, padding:'9px 0', borderBottom:'1px solid var(--border)' }}>
-                  <span style={{ fontSize:20, width:26 }}>{CAT_EMOJI[text]||'📌'}</span>
-                  <div style={{ flex:1 }}>
-                    <div style={{ fontSize:13, fontWeight:600, color:'var(--text)' }}>{text}</div>
-                    <div style={{ fontSize:11, color:'var(--text-sub)', marginTop:2 }}>
-                      {[...mSet].sort().map(fmtMoFull).join(' / ')}
-                    </div>
-                  </div>
-                  <span style={{ fontSize:13, fontWeight:700, color: cnt >= 3 ? 'var(--accent)' : 'var(--text-sub)', whiteSpace:'nowrap' }}>
-                    {cnt}ヶ月
-                  </span>
-                </div>
-              );
-          })}
-        </div>
-      )}
     </>
   );
 }
@@ -906,20 +928,10 @@ function FamilyScreen({ person, records, checkHistory, onBack, onAddRecord, onEd
   myRecords.forEach(r => r.cats.forEach(c => { catCounts[c] = (catCounts[c]||0)+1; }));
 
   /* 次回チェック予定日を計算 */
-  const nextCheckDate = (() => {
-    if (!person.lastCheckDate) return null;
-    const days = CHECK_INTERVAL_DAYS[person.checkInterval];
-    if (!days) return null;
-    const d = new Date(person.lastCheckDate);
-    d.setDate(d.getDate() + days);
-    return d;
-  })();
-  const nextCheckStr = nextCheckDate
-    ? `${nextCheckDate.getMonth()+1}/${nextCheckDate.getDate()}`
-    : null;
-
-  const due = isCheckDue(person);
-  const dueText = getCheckDueText(person);
+  const due          = isCheckDue(person);
+  const nextCheckDate = getNextCheckDate(person);
+  const nextCheckStr  = `${nextCheckDate.getMonth()+1}月${nextCheckDate.getDate()}日`;
+  const lastCheckYM   = person.lastCheckDate ? person.lastCheckDate.slice(0,7) : null;
 
   return (
     <div className="page anim">
@@ -935,15 +947,16 @@ function FamilyScreen({ person, records, checkHistory, onBack, onAddRecord, onEd
               <p>記録 {myRecords.length}件 · チェック {checkHistory.filter(c => c.personId === person.id).length}回</p>
               {due ? (
                 <p style={{ color:'#B86000', fontWeight:700, fontSize:12, marginTop:2 }}>
-                  🔔 生活変化チェックの時期です
-                  {dueText && <span style={{ fontWeight:400, marginLeft:4 }}>（{dueText}）</span>}
+                  🔔 今月の生活変化チェックの時期です
+                </p>
+              ) : checkedThisMonth(person) ? (
+                <p style={{ color:'var(--green)', fontSize:12, marginTop:2, fontWeight:600 }}>
+                  ✅ 今月のチェック済み・次回: {nextCheckStr}
                 </p>
               ) : (
                 <p style={{ color:'var(--text-sub)', fontSize:12, marginTop:2 }}>
-                  {person.lastCheckDate
-                    ? nextCheckStr
-                      ? `次回チェック予定: ${nextCheckStr}`
-                      : `前回チェック: ${fmtShort(person.lastCheckDate)}`
+                  {lastCheckYM
+                    ? `前回: ${fmtTargetMonth(lastCheckYM)}・次回チェック予定: ${nextCheckStr}`
                     : 'まだ生活変化チェックをしていません'}
                 </p>
               )}
@@ -1061,15 +1074,27 @@ function FamilyScreen({ person, records, checkHistory, onBack, onAddRecord, onEd
 }
 
 /* ═══════════════════════════════════════════════════
-   生活変化チェック
+   生活変化チェック（月1回振り返り方式）
 ═══════════════════════════════════════════════════ */
-function CheckScreen({ persons, initialPerson, records, onBack, onSave }) {
-  const [step,   setStep]   = useState(initialPerson ? 1 : 0);
-  const [person, setPerson] = useState(initialPerson || null);
-  const [ans,    setAns]    = useState({});
-  const total = 2;
+const IMPRESSIONS = ['良くなった','変わらない','少し気になる','心配になってきた'];
+const IMPRESSION_COLOR = {
+  '良くなった':       'var(--green)',
+  '変わらない':       'var(--primary)',
+  '少し気になる':     'var(--accent)',
+  '心配になってきた': '#D9534F',
+};
 
-  const toggle = id => setAns(p => ({ ...p, [id]: !p[id] }));
+function CheckScreen({ persons, initialPerson, onBack, onSave }) {
+  const [step,       setStep]       = useState(initialPerson ? 1 : 0);
+  const [person,     setPerson]     = useState(initialPerson || null);
+  const [ans,        setAns]        = useState({});
+  const [impression, setImpression] = useState('');
+  const [note,       setNote]       = useState('');
+
+  const today     = new Date();
+  const targetYM  = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}`;
+
+  const toggle  = id => setAns(p => ({ ...p, [id]: !p[id] }));
   const checked = CHECK_QS.filter(q => ans[q.id]);
 
   const getResult = () => {
@@ -1077,7 +1102,7 @@ function CheckScreen({ persons, initialPerson, records, onBack, onSave }) {
     if (n >= 5) return { level:'high', label:'複数の変化が見られます',   color:'#D9534F', bg:'#FEF0EB', icon:'🔴' };
     if (n >= 3) return { level:'mid',  label:'気になる変化があります',    color:'var(--accent)', bg:'var(--accent-light)', icon:'🟡' };
     if (n >= 1) return { level:'low',  label:'軽度の変化が見られます',    color:'var(--primary)', bg:'var(--primary-bg)', icon:'🔵' };
-    return         { level:'ok',   label:'特に気になる変化はありません', color:'var(--green)', bg:'var(--green-light)', icon:'🟢' };
+    return               { level:'ok',   label:'特に気になる変化はありません', color:'var(--green)', bg:'var(--green-light)', icon:'🟢' };
   };
 
   /* ── STEP 0: 家族選択 ── */
@@ -1095,16 +1120,20 @@ function CheckScreen({ persons, initialPerson, records, onBack, onSave }) {
         <div className="alert alert-info" style={{ marginBottom:14 }}>
           <Ic n="info" s={15} c="var(--primary)" />
           <span style={{ fontSize:13, color:'var(--primary-dark)', lineHeight:1.6 }}>
-            最近2週間の様子をチェックします。気になる変化にチェックを入れてください。
+            この1か月を振り返って、家族の様子や変化を記録します。月に1回実施しましょう。
           </span>
         </div>
         {persons.map(p => (
-          <div key={p.id} className="family-row" onClick={() => { setPerson(p); setAns({}); setStep(1); }}>
+          <div key={p.id} className="family-row" onClick={() => { setPerson(p); setAns({}); setImpression(''); setNote(''); setStep(1); }}>
             <div className="family-emoji" style={{ fontSize:26 }}>{p.emoji}</div>
             <div style={{ flex:1 }}>
               <div className="family-name">{p.name}（{p.relation}）</div>
               <div className="family-sub">
-                {getCheckDueText(p) || (p.lastCheckDate ? `前回: ${fmtDateSlash(p.lastCheckDate)}` : 'まだチェックしていません')}
+                {checkedThisMonth(p)
+                  ? `今月のチェック済み`
+                  : p.lastCheckDate
+                    ? `前回: ${fmtTargetMonth(p.lastCheckDate.slice(0,7))}`
+                    : 'まだチェックしていません'}
               </div>
             </div>
             {isCheckDue(p) && <span className="badge badge-due" style={{ marginRight:6, flexShrink:0 }}>チェック時期</span>}
@@ -1115,102 +1144,208 @@ function CheckScreen({ persons, initialPerson, records, onBack, onSave }) {
     </div>
   );
 
-  /* ── STEP 1〜2: チェック（4問ずつ2ページ） ── */
-  if (step <= total) {
-    const qs = CHECK_QS.slice((step - 1) * 4, step * 4);
-    return (
-      <div className="page anim">
-        <div className="page-header">
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-            <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-              <button onClick={() => setStep(step - 1)} style={{ background:'none', border:'none', cursor:'pointer' }}>
-                <Ic n="left" s={24} c="var(--primary)" />
-              </button>
-              <div><h1>生活変化チェック</h1><p>{person.name}さん · {step}/{total}</p></div>
-            </div>
-            <span style={{ fontSize:13, color:'var(--text-sub)', fontWeight:600 }}>
-              {checked.length} 項目
-            </span>
+  /* ── STEP 1: 対象期間説明 + チェック項目 ── */
+  if (step === 1) return (
+    <div className="page anim">
+      <div className="page-header">
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+            <button onClick={() => setStep(0)} style={{ background:'none', border:'none', cursor:'pointer' }}>
+              <Ic n="left" s={24} c="var(--primary)" />
+            </button>
+            <div><h1>生活変化チェック</h1><p>{person.name}さん · ステップ1/2</p></div>
           </div>
-          <div className="progress-bar">
-            <div className="progress-fill" style={{ width:`${(step / (total + 1)) * 100}%` }} />
+          <span style={{ fontSize:13, color:'var(--text-sub)', fontWeight:600 }}>
+            {checked.length}項目
+          </span>
+        </div>
+        <div className="progress-bar"><div className="progress-fill" style={{ width:'50%' }} /></div>
+      </div>
+      <div className="page-body">
+        {/* 説明 + 対象期間 */}
+        <div style={{ background:'var(--primary-bg)', borderRadius:12, padding:'14px 14px', marginBottom:14 }}>
+          <div style={{ fontSize:14, fontWeight:700, color:'var(--primary-dark)', marginBottom:6 }}>
+            この1か月を振り返って、以前と比べて気になった変化を選んでください。
+          </div>
+          <div style={{ fontSize:12, color:'var(--text-sub)', display:'flex', alignItems:'center', gap:6 }}>
+            <span>📅</span>
+            <span>対象期間：{fmtTargetPeriod(targetYM)}</span>
           </div>
         </div>
-        <div className="page-body">
-          <div style={{ fontSize:13, color:'var(--text-sub)', marginBottom:14 }}>
-            最近2週間で気になる変化はありますか？（複数可）
-          </div>
-          {qs.map(q => (
-            <div key={q.id} className={`check-item ${ans[q.id] ? 'on' : ''}`} onClick={() => toggle(q.id)}>
-              <div className="checkbox">
-                {ans[q.id] && <svg viewBox="0 0 12 10" width="12" height="10"><polyline points="1,5 4.5,8.5 11,1" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>}
-              </div>
-              <label style={{ fontSize:14, color:'var(--text)', cursor:'pointer', lineHeight:1.5 }}>{q.text}</label>
+
+        <div style={{ fontSize:13, color:'var(--text-sub)', marginBottom:12 }}>
+          以前と比べて変化があった項目にチェックを入れてください。（複数選択可）
+        </div>
+
+        {CHECK_QS.map(q => (
+          <div key={q.id} className={`check-item ${ans[q.id] ? 'on' : ''}`} onClick={() => toggle(q.id)}>
+            <div className="checkbox">
+              {ans[q.id] && <svg viewBox="0 0 12 10" width="12" height="10"><polyline points="1,5 4.5,8.5 11,1" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>}
             </div>
-          ))}
-          <div style={{ marginTop:16 }}>
-            {step < total
-              ? <button className="btn btn-primary btn-full" onClick={() => setStep(step + 1)}>次へ</button>
-              : <button className="btn btn-primary btn-full" onClick={() => setStep(total + 1)}>結果を見る</button>
-            }
+            <label style={{ fontSize:14, color:'var(--text)', cursor:'pointer', lineHeight:1.5 }}>{q.text}</label>
           </div>
+        ))}
+
+        <div style={{ marginTop:16 }}>
+          <button className="btn btn-primary btn-full" onClick={() => setStep(2)}>
+            次へ：全体的な印象を入力
+          </button>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 
-  /* ─ result ─ */
+  /* ── STEP 2: 全体的な印象 + 自由記述 ── */
+  if (step === 2) return (
+    <div className="page anim">
+      <div className="page-header">
+        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+          <button onClick={() => setStep(1)} style={{ background:'none', border:'none', cursor:'pointer' }}>
+            <Ic n="left" s={24} c="var(--primary)" />
+          </button>
+          <div><h1>生活変化チェック</h1><p>{person.name}さん · ステップ2/2</p></div>
+        </div>
+        <div className="progress-bar"><div className="progress-fill" style={{ width:'85%' }} /></div>
+      </div>
+      <div className="page-body">
+        {/* 全体的な印象 */}
+        <div className="form-group">
+          <label className="form-label" style={{ fontSize:15, fontWeight:700, color:'var(--text)', marginBottom:10 }}>
+            この1か月の全体的な印象
+          </label>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+            {IMPRESSIONS.map(imp => {
+              const active = impression === imp;
+              const c = IMPRESSION_COLOR[imp];
+              return (
+                <button key={imp} onClick={() => setImpression(active ? '' : imp)}
+                  style={{ padding:'14px 8px', borderRadius:12,
+                    border: `2px solid ${active ? c : 'var(--border)'}`,
+                    background: active ? (imp === '良くなった' ? 'var(--green-light)' : imp === '変わらない' ? 'var(--primary-bg)' : imp === '少し気になる' ? 'var(--accent-light)' : '#FEF0EB') : 'var(--surface)',
+                    color: active ? c : 'var(--text-sub)',
+                    fontWeight: active ? 700 : 500, fontSize:14,
+                    cursor:'pointer', fontFamily:'inherit', lineHeight:1.4, textAlign:'center' }}>
+                  {imp === '良くなった' ? '😊' : imp === '変わらない' ? '😐' : imp === '少し気になる' ? '😟' : '😨'}<br/>
+                  {imp}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 自由記述 */}
+        <div className="form-group">
+          <label className="form-label" style={{ fontSize:15, fontWeight:700, color:'var(--text)' }}>
+            この1か月を振り返って感じたこと・様子の変化
+            <span style={{ fontWeight:400, fontSize:12, color:'var(--text-light)', marginLeft:6 }}>（任意）</span>
+          </label>
+          <textarea
+            className="form-input" rows={5}
+            style={{ resize:'none', lineHeight:1.65 }}
+            value={note}
+            onChange={e => setNote(e.target.value)}
+            placeholder={"例：\n・最近、食欲が落ちてきたように感じる\n・以前より同じ話を繰り返すことが増えた\n・今月は大きな変化はなかった"}
+          />
+        </div>
+
+        <button className="btn btn-primary btn-full" onClick={() => setStep(3)}>
+          確認する
+        </button>
+      </div>
+    </div>
+  );
+
+  /* ── STEP 3: 確認・保存 ── */
   const res = getResult();
   return (
     <div className="page anim">
       <div className="page-header">
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          <button onClick={onBack} style={{ background:'none', border:'none', cursor:'pointer' }}>
+          <button onClick={() => setStep(2)} style={{ background:'none', border:'none', cursor:'pointer' }}>
             <Ic n="left" s={24} c="var(--primary)" />
           </button>
-          <h1>チェック結果</h1>
+          <h1>チェック確認</h1>
         </div>
+        <div className="progress-bar"><div className="progress-fill" style={{ width:'100%' }} /></div>
       </div>
       <div className="page-body">
-        <div style={{ background:res.bg, border:`2px solid ${res.color}30`, borderRadius:14, padding:'20px 16px', textAlign:'center', marginBottom:16 }}>
-          <div style={{ fontSize:40, marginBottom:8 }}>{res.icon}</div>
-          <div style={{ fontSize:18, fontWeight:800, color:res.color, marginBottom:8 }}>{res.label}</div>
-          {checked.length > 0
-            ? <p style={{ fontSize:13, color:'var(--text-sub)', lineHeight:1.65 }}>{checked.length}項目の変化が記録されました。記録を保存して、相談の参考にしましょう。</p>
-            : <p style={{ fontSize:13, color:'var(--text-sub)' }}>気になる変化は見られませんでした。引き続き様子を見ましょう。</p>
-          }
+
+        {/* 対象者・期間 */}
+        <div style={{ background:'var(--bg)', borderRadius:12, padding:'12px 14px', marginBottom:14 }}>
+          <div style={{ fontSize:13, color:'var(--text-sub)', marginBottom:4 }}>
+            {person.emoji} {person.name}さん
+          </div>
+          <div style={{ fontSize:12, color:'var(--text-sub)' }}>
+            対象期間：{fmtTargetPeriod(targetYM)}
+          </div>
         </div>
 
+        {/* 結果バッジ */}
+        <div style={{ background:res.bg, border:`2px solid ${res.color}30`, borderRadius:14, padding:'16px', textAlign:'center', marginBottom:14 }}>
+          <div style={{ fontSize:32, marginBottom:6 }}>{res.icon}</div>
+          <div style={{ fontSize:16, fontWeight:800, color:res.color }}>{res.label}</div>
+          {checked.length > 0 && (
+            <div style={{ fontSize:13, color:'var(--text-sub)', marginTop:6 }}>
+              {checked.length}項目の変化が記録されました
+            </div>
+          )}
+        </div>
+
+        {/* 選択した項目 */}
         {checked.length > 0 && (
-          <>
-            <div className="section-title">チェックされた変化</div>
+          <div className="card" style={{ marginBottom:12 }}>
+            <div className="card-title">選択した項目</div>
             {checked.map(q => (
-              <div key={q.id} className="memo-block" style={{ borderLeftColor: res.color }}>
-                <div className="memo-block-body">{CAT_EMOJI[q.text]||'●'} {q.text}</div>
+              <div key={q.id} style={{ padding:'6px 0', borderBottom:'1px solid var(--border)', fontSize:14, color:'var(--text)' }}>
+                ☑ {q.text}
               </div>
             ))}
-            <div className="section-title" style={{ marginTop:16 }}>次のステップ</div>
-            <div className="card">
-              {[
-                { n:1, text:'家族内で情報を共有する', icon:'👨‍👩‍👧' },
-                { n:2, text:'地域包括支援センターへ相談', icon:'🏢' },
-                { n:3, text:'かかりつけ医への受診を検討', icon:'🏥' },
-              ].filter((_,i) => i < checked.length).map(s => (
-                <div key={s.n} style={{ display:'flex', alignItems:'center', gap:12, padding:'10px 0', borderBottom:'1px solid var(--border)' }}>
-                  <span className="step-num">{s.n}</span>
-                  <span style={{ fontSize:14, color:'var(--text)', fontWeight:500 }}>{s.icon} {s.text}</span>
-                </div>
-              ))}
+          </div>
+        )}
+
+        {/* 全体的な印象 */}
+        {impression && (
+          <div className="card" style={{ marginBottom:12 }}>
+            <div className="card-title">全体的な印象</div>
+            <div style={{ fontSize:15, fontWeight:700, color: IMPRESSION_COLOR[impression] || 'var(--text)' }}>
+              {impression}
             </div>
-          </>
+          </div>
+        )}
+
+        {/* 自由記述 */}
+        {note && (
+          <div className="card" style={{ marginBottom:12 }}>
+            <div className="card-title">この1か月を振り返って感じたこと</div>
+            <div style={{ fontSize:13, color:'var(--text-sub)', lineHeight:1.7, whiteSpace:'pre-wrap' }}>{note}</div>
+          </div>
+        )}
+
+        {/* 次のステップ */}
+        {checked.length >= 3 && (
+          <div className="card" style={{ marginBottom:12 }}>
+            <div className="card-title">次のステップ</div>
+            {[
+              { text:'家族内で情報を共有する',       icon:'👨‍👩‍👧' },
+              { text:'地域包括支援センターへ相談',   icon:'🏢' },
+              { text:'かかりつけ医への受診を検討',   icon:'🏥' },
+            ].filter((_,i) => i < Math.min(checked.length, 3)).map((s,i) => (
+              <div key={i} style={{ display:'flex', alignItems:'center', gap:12, padding:'8px 0', borderBottom:'1px solid var(--border)' }}>
+                <span className="step-num">{i+1}</span>
+                <span style={{ fontSize:14, color:'var(--text)', fontWeight:500 }}>{s.icon} {s.text}</span>
+              </div>
+            ))}
+          </div>
         )}
 
         <div style={{ display:'flex', gap:10, marginTop:8 }}>
-          <button className="btn btn-outline" style={{ flex:1 }}
-            onClick={() => onSave({ person, ans, res, checked })}>
+          <button className="btn btn-outline" style={{ flex:1 }} onClick={onBack}>
+            キャンセル
+          </button>
+          <button className="btn btn-primary" style={{ flex:1 }}
+            onClick={() => onSave({ person, ans, res, checked, impression, note, targetYM })}>
             記録に保存
           </button>
-          <button className="btn btn-primary" style={{ flex:1 }} onClick={onBack}>完了</button>
         </div>
       </div>
     </div>
@@ -1223,26 +1358,259 @@ function CheckScreen({ persons, initialPerson, records, onBack, onSave }) {
 
 /* 場面マスター */
 const SCENES = [
-  { id:'living',   label:'居間',       icon:'🛋',
-    hints:['同じ話を何度も繰り返した','テレビをつけたまま寝ていた','物の置き場所を忘れていた','会話がかみ合わなかった'] },
-  { id:'kitchen',  label:'台所',       icon:'🍳',
-    hints:['冷蔵庫に古い食品が多かった','火を消し忘れていた','調理の手順を間違えていた','食欲が落ちているようだった'] },
-  { id:'bedroom',  label:'寝室',       icon:'🛏',
-    hints:['昼夜逆転しているようだった','布団が長期間干されていなかった','夜中に何度も起きていた'] },
-  { id:'toilet',   label:'トイレ',     icon:'🚽',
-    hints:['電気を消し忘れていた','立ち上がりが不安定だった','間に合わないことがあった'] },
-  { id:'bath',     label:'浴室',       icon:'🛁',
-    hints:['お湯の温度管理が難しそうだった','浴槽のまたぎが不安定だった','入浴を嫌がっていた'] },
-  { id:'entrance', label:'玄関',       icon:'🚪',
-    hints:['鍵の閉め忘れがあった','外出後に帰れなくなりそうだった','靴の履き間違えがあった'] },
-  { id:'outing',   label:'外出先',     icon:'🚶',
-    hints:['道に迷っていた','買い物でお金の計算が難しそうだった','疲れやすくなっていた'] },
-  { id:'hospital', label:'病院・施設', icon:'🏥',
-    hints:['受診の内容をすぐ忘れた','薬の管理が難しそうだった','施設内での様子が気になった'] },
-  { id:'medicine', label:'服薬・薬の確認', icon:'💊',
-    hints:['朝食後の薬が残っていた','夕食後の薬を飲み忘れていた','薬カレンダーに昨日の薬が残っていた','薬を飲んだか本人が覚えていなかった','飲み忘れに気づいて一緒に確認した'] },
-  { id:'other',    label:'その他',     icon:'📝', hints:[] },
+  { id:'living',   label:'居間',           icon:'🛋' },
+  { id:'kitchen',  label:'台所',           icon:'🍳' },
+  { id:'bedroom',  label:'寝室',           icon:'🛏' },
+  { id:'toilet',   label:'トイレ',         icon:'🚽' },
+  { id:'bath',     label:'浴室',           icon:'🛁' },
+  { id:'entrance', label:'玄関',           icon:'🚪' },
+  { id:'outing',   label:'外出先',         icon:'🚶' },
+  { id:'hospital', label:'病院・施設',     icon:'🏥' },
+  { id:'medicine', label:'服薬・薬の確認', icon:'💊' },
+  { id:'other',    label:'その他',         icon:'📝' },
 ];
+
+/*
+  HINT_MAP[カテゴリ名][シーンID] → 入力例配列
+  '_' はシーン未選択時の共通例
+*/
+/*
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  入力例データ管理
+  ─ 正規データ： ./input-examples.json
+  ─ フォールバック： FALLBACK_HINTS（JSON読み込み失敗時に使用）
+  ─ 追加・修正は input-examples.json のみ編集してください
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+*/
+
+/* JSON の scene ラベル → SCENES の id に変換するマップ */
+const SCENE_LABEL_TO_ID = {
+  'すべて':       '_',
+  '居間':         'living',
+  '台所':         'kitchen',
+  '寝室':         'bedroom',
+  'トイレ':       'toilet',
+  '浴室':         'bath',
+  '玄関':         'entrance',
+  '外出先':       'outing',
+  '病院・施設':   'hospital',
+  '服薬・薬の確認': 'medicine',
+  'その他':       'other',
+};
+
+/* JSON エントリ → 内部フォーマット({ category, type, scene, text }) に変換 */
+const jsonEntryToInternal = entry => ({
+  category: entry.category,
+  type:     entry.displayType,           /* 共通 / 場面別 */
+  scene:    SCENE_LABEL_TO_ID[entry.scene] || entry.scene,
+  text:     entry.text,
+});
+
+/* フォールバック用データ（input-examples.json と同内容を維持） */
+const FALLBACK_HINTS = [
+  /* ── 同じ話を繰り返す ─────────────────── */
+  { category:'同じ話を繰り返す', type:'共通',  scene:'_',        text:'同じ話を何度も繰り返した' },
+  { category:'同じ話を繰り返す', type:'共通',  scene:'_',        text:'さっき話した内容をもう一度話した' },
+  { category:'同じ話を繰り返す', type:'共通',  scene:'_',        text:'同じ質問を何度もした' },
+  { category:'同じ話を繰り返す', type:'共通',  scene:'_',        text:'話の前後がつながらなかった' },
+  { category:'同じ話を繰り返す', type:'共通',  scene:'_',        text:'30分の間に同じ話を3回した' },
+  { category:'同じ話を繰り返す', type:'共通',  scene:'_',        text:'会話が噛み合わなかった' },
+  { category:'同じ話を繰り返す', type:'場面別', scene:'kitchen',  text:'食事中に同じ話を繰り返した' },
+  { category:'同じ話を繰り返す', type:'場面別', scene:'kitchen',  text:'調理しながら同じことを何度も話した' },
+  { category:'同じ話を繰り返す', type:'場面別', scene:'kitchen',  text:'さっき食べたものを覚えていなかった' },
+  { category:'同じ話を繰り返す', type:'場面別', scene:'toilet',   text:'30分に2回以上トイレに行った' },
+  { category:'同じ話を繰り返す', type:'場面別', scene:'toilet',   text:'便が出ないと繰り返し話した' },
+  { category:'同じ話を繰り返す', type:'場面別', scene:'bath',     text:'お風呂に入らないと繰り返し話した' },
+  { category:'同じ話を繰り返す', type:'場面別', scene:'bath',     text:'まだ入浴していないのに「入浴した」と話した' },
+  { category:'同じ話を繰り返す', type:'場面別', scene:'entrance', text:'なぜ出かけるのか繰り返し質問した' },
+  { category:'同じ話を繰り返す', type:'場面別', scene:'entrance', text:'「家に帰る」と繰り返し話した' },
+  { category:'同じ話を繰り返す', type:'場面別', scene:'hospital', text:'受診後に同じ内容を何度も聞いた' },
+  { category:'同じ話を繰り返す', type:'場面別', scene:'hospital', text:'医師に言われたことをすぐ忘れた' },
+  { category:'同じ話を繰り返す', type:'場面別', scene:'hospital', text:'診察内容を覚えていなかった' },
+
+  /* ── 薬の飲み忘れ（すべての場面で共通） ── */
+  { category:'薬の飲み忘れ', type:'共通', scene:'_', text:'飲み忘れた薬がテーブルに残っていた' },
+  { category:'薬の飲み忘れ', type:'共通', scene:'_', text:'薬を飲んだか何度も確認していた' },
+  { category:'薬の飲み忘れ', type:'共通', scene:'_', text:'薬袋が開封されていなかった' },
+  { category:'薬の飲み忘れ', type:'共通', scene:'_', text:'薬を飲んだか覚えていなかった' },
+  { category:'薬の飲み忘れ', type:'共通', scene:'_', text:'薬を飲み忘れていた' },
+  { category:'薬の飲み忘れ', type:'共通', scene:'_', text:'薬カレンダーに残りがあった' },
+  { category:'薬の飲み忘れ', type:'共通', scene:'_', text:'飲み忘れに気づいて一緒に確認した' },
+  { category:'薬の飲み忘れ', type:'共通', scene:'_', text:'朝食後の薬を飲み忘れていた' },
+  { category:'薬の飲み忘れ', type:'共通', scene:'_', text:'昼食後の薬を飲み忘れていた' },
+  { category:'薬の飲み忘れ', type:'共通', scene:'_', text:'夕食後の薬を飲み忘れていた' },
+
+  /* ── 金銭管理 ────────────────────────── */
+  { category:'金銭管理', type:'共通',  scene:'_',        text:'お金の管理が難しそうだった' },
+  { category:'金銭管理', type:'共通',  scene:'_',        text:'計算を間違えることが増えた' },
+  { category:'金銭管理', type:'共通',  scene:'_',        text:'財布の中身を何度も確認した' },
+  { category:'金銭管理', type:'場面別', scene:'outing',   text:'買い物でお釣りの計算が合わなかった' },
+  { category:'金銭管理', type:'場面別', scene:'outing',   text:'同じものを何度も買っていた' },
+  { category:'金銭管理', type:'場面別', scene:'outing',   text:'レジでの支払いに時間がかかった' },
+  { category:'金銭管理', type:'場面別', scene:'living',   text:'家計の管理が難しそうだった' },
+  { category:'金銭管理', type:'場面別', scene:'living',   text:'通帳や現金の管理が心配になった' },
+  { category:'金銭管理', type:'場面別', scene:'living',   text:'お金の使い道を覚えていなかった' },
+  { category:'金銭管理', type:'場面別', scene:'hospital', text:'医療費の支払いで困っていた' },
+  { category:'金銭管理', type:'場面別', scene:'hospital', text:'窓口での支払いに時間がかかっていた' },
+  { category:'金銭管理', type:'場面別', scene:'hospital', text:'支払い金額が合わなかった' },
+
+  /* ── 転倒 ───────────────────────────── */
+  { category:'転倒', type:'共通',  scene:'_',        text:'歩くときに不安定だった' },
+  { category:'転倒', type:'共通',  scene:'_',        text:'ふらついていた' },
+  { category:'転倒', type:'共通',  scene:'_',        text:'つかまり歩きをしていた' },
+  { category:'転倒', type:'共通',  scene:'_',        text:'バランスを崩した' },
+  { category:'転倒', type:'場面別', scene:'living',   text:'ソファから立ち上がるときによろけた' },
+  { category:'転倒', type:'場面別', scene:'living',   text:'部屋を歩くときにふらついた' },
+  { category:'転倒', type:'場面別', scene:'living',   text:'家具につかまって歩いていた' },
+  { category:'転倒', type:'場面別', scene:'living',   text:'立ち上がりに時間がかかった' },
+  { category:'転倒', type:'場面別', scene:'kitchen',  text:'台所で立ちながら調理するのが不安定だった' },
+  { category:'転倒', type:'場面別', scene:'kitchen',  text:'調理中によろけた' },
+  { category:'転倒', type:'場面別', scene:'kitchen',  text:'シンクにつかまっていた' },
+  { category:'転倒', type:'場面別', scene:'toilet',   text:'便座から立ち上がるときによろけた' },
+  { category:'転倒', type:'場面別', scene:'toilet',   text:'壁につかまりながら歩いていた' },
+  { category:'転倒', type:'場面別', scene:'toilet',   text:'足元が不安定だった' },
+  { category:'転倒', type:'場面別', scene:'bath',     text:'浴槽をまたぐときにふらついた' },
+  { category:'転倒', type:'場面別', scene:'bath',     text:'洗い場で滑りそうになった' },
+  { category:'転倒', type:'場面別', scene:'bath',     text:'立ち上がるときに手すりを強く握っていた' },
+  { category:'転倒', type:'場面別', scene:'entrance', text:'玄関の段差でつまずいた' },
+  { category:'転倒', type:'場面別', scene:'entrance', text:'靴を履くときにバランスを崩した' },
+  { category:'転倒', type:'場面別', scene:'entrance', text:'外出後に足がもつれた' },
+  { category:'転倒', type:'場面別', scene:'outing',   text:'外出先で転倒しそうになった' },
+  { category:'転倒', type:'場面別', scene:'outing',   text:'段差でつまずいた' },
+  { category:'転倒', type:'場面別', scene:'outing',   text:'歩くスピードが遅くなった' },
+  { category:'転倒', type:'場面別', scene:'bedroom',  text:'ベッドから立ち上がるときによろけた' },
+  { category:'転倒', type:'場面別', scene:'bedroom',  text:'夜中にトイレへ行く途中でふらついた' },
+
+  /* ── 消し忘れ ───────────────────────── */
+  { category:'消し忘れ', type:'共通',  scene:'_',        text:'電気やガスをつけたままにしていた' },
+  { category:'消し忘れ', type:'共通',  scene:'_',        text:'消し忘れがあった' },
+  { category:'消し忘れ', type:'共通',  scene:'_',        text:'火が出たままになっていた' },
+  { category:'消し忘れ', type:'場面別', scene:'kitchen',  text:'コンロの火を消し忘れていた' },
+  { category:'消し忘れ', type:'場面別', scene:'kitchen',  text:'電気ポットをつけたまま離れていた' },
+  { category:'消し忘れ', type:'場面別', scene:'kitchen',  text:'換気扇を消し忘れていた' },
+  { category:'消し忘れ', type:'場面別', scene:'kitchen',  text:'コンロの上に何も乗っていないのに火がついていた' },
+  { category:'消し忘れ', type:'場面別', scene:'living',   text:'テレビをつけたまま外出していた' },
+  { category:'消し忘れ', type:'場面別', scene:'living',   text:'電気をつけたまま就寝していた' },
+  { category:'消し忘れ', type:'場面別', scene:'living',   text:'暖房をつけたまま外出していた' },
+  { category:'消し忘れ', type:'場面別', scene:'toilet',   text:'トイレの電気を消し忘れていた' },
+  { category:'消し忘れ', type:'場面別', scene:'bath',     text:'お風呂の電気を消し忘れていた' },
+  { category:'消し忘れ', type:'場面別', scene:'bath',     text:'浴室換気扇をつけたままだった' },
+  { category:'消し忘れ', type:'場面別', scene:'bath',     text:'お湯を出したまま離れていた' },
+  { category:'消し忘れ', type:'場面別', scene:'bedroom',  text:'電気をつけたまま寝ていた' },
+  { category:'消し忘れ', type:'場面別', scene:'bedroom',  text:'暖房をつけたまま外出していた' },
+  { category:'消し忘れ', type:'場面別', scene:'entrance', text:'玄関の電気をつけたまま外出していた' },
+
+  /* ── ゴミ出しができない ─────────────── */
+  { category:'ゴミ出しができない', type:'共通',  scene:'_',        text:'ゴミ出しができていなかった' },
+  { category:'ゴミ出しができない', type:'共通',  scene:'_',        text:'ゴミ袋がたまっていた' },
+  { category:'ゴミ出しができない', type:'共通',  scene:'_',        text:'ゴミ出しの日を忘れていた' },
+  { category:'ゴミ出しができない', type:'場面別', scene:'living',   text:'部屋にゴミが散乱していた' },
+  { category:'ゴミ出しができない', type:'場面別', scene:'living',   text:'ゴミ袋が満杯のまま置いてあった' },
+  { category:'ゴミ出しができない', type:'場面別', scene:'living',   text:'片づけられずにいた' },
+  { category:'ゴミ出しができない', type:'場面別', scene:'kitchen',  text:'生ゴミをためたままにしていた' },
+  { category:'ゴミ出しができない', type:'場面別', scene:'kitchen',  text:'空き缶や空き瓶が片づけられていなかった' },
+  { category:'ゴミ出しができない', type:'場面別', scene:'kitchen',  text:'ゴミの分別ができていなかった' },
+  { category:'ゴミ出しができない', type:'場面別', scene:'kitchen',  text:'台所にゴミが山積みになっていた' },
+  { category:'ゴミ出しができない', type:'場面別', scene:'entrance', text:'玄関にゴミ袋が出したまま残っていた' },
+  { category:'ゴミ出しができない', type:'場面別', scene:'entrance', text:'収集日に出し忘れていた' },
+
+  /* ── 食欲の変化 ─────────────────────── */
+  { category:'食欲の変化', type:'共通',  scene:'_',        text:'食欲が落ちているようだった' },
+  { category:'食欲の変化', type:'共通',  scene:'_',        text:'食事量が減っていた' },
+  { category:'食欲の変化', type:'共通',  scene:'_',        text:'体重が落ちてきた' },
+  { category:'食欲の変化', type:'共通',  scene:'_',        text:'好きなものも食べなくなった' },
+  { category:'食欲の変化', type:'場面別', scene:'kitchen',  text:'作った食事をほとんど食べなかった' },
+  { category:'食欲の変化', type:'場面別', scene:'kitchen',  text:'冷蔵庫に食べかけのものが多かった' },
+  { category:'食欲の変化', type:'場面別', scene:'kitchen',  text:'賞味期限切れの食品が増えた' },
+  { category:'食欲の変化', type:'場面別', scene:'kitchen',  text:'食事の準備をしなくなった' },
+  { category:'食欲の変化', type:'場面別', scene:'living',   text:'食事中にあまり食べなかった' },
+  { category:'食欲の変化', type:'場面別', scene:'living',   text:'おやつを食べなくなった' },
+  { category:'食欲の変化', type:'場面別', scene:'living',   text:'食事時間が短くなった' },
+  { category:'食欲の変化', type:'場面別', scene:'hospital', text:'食欲がないと話していた' },
+  { category:'食欲の変化', type:'場面別', scene:'hospital', text:'体重が落ちたと医師に言われた' },
+  { category:'食欲の変化', type:'場面別', scene:'hospital', text:'食事をとれていないと報告があった' },
+  { category:'食欲の変化', type:'場面別', scene:'outing',   text:'外食先でほとんど食べなかった' },
+  { category:'食欲の変化', type:'場面別', scene:'outing',   text:'食べたいものがなくなったと話していた' },
+
+  /* ── 気分の落ち込み ─────────────────── */
+  { category:'気分の落ち込み', type:'共通',  scene:'_',        text:'元気がなかった' },
+  { category:'気分の落ち込み', type:'共通',  scene:'_',        text:'話しかけても反応が薄かった' },
+  { category:'気分の落ち込み', type:'共通',  scene:'_',        text:'表情が暗かった' },
+  { category:'気分の落ち込み', type:'共通',  scene:'_',        text:'何事にも意欲がなさそうだった' },
+  { category:'気分の落ち込み', type:'場面別', scene:'living',   text:'テレビを見ても楽しそうにしていなかった' },
+  { category:'気分の落ち込み', type:'場面別', scene:'living',   text:'一人でぼーっとしていることが増えた' },
+  { category:'気分の落ち込み', type:'場面別', scene:'living',   text:'趣味をしなくなった' },
+  { category:'気分の落ち込み', type:'場面別', scene:'living',   text:'会話が少なくなった' },
+  { category:'気分の落ち込み', type:'場面別', scene:'bedroom',  text:'一日中横になっていた' },
+  { category:'気分の落ち込み', type:'場面別', scene:'bedroom',  text:'朝起きるのが辛そうだった' },
+  { category:'気分の落ち込み', type:'場面別', scene:'bedroom',  text:'眠れないと話していた' },
+  { category:'気分の落ち込み', type:'場面別', scene:'bedroom',  text:'布団から出たがらなかった' },
+  { category:'気分の落ち込み', type:'場面別', scene:'outing',   text:'外出先で楽しそうにしていなかった' },
+  { category:'気分の落ち込み', type:'場面別', scene:'outing',   text:'人と話したがらなかった' },
+  { category:'気分の落ち込み', type:'場面別', scene:'outing',   text:'外出をしぶるようになった' },
+  { category:'気分の落ち込み', type:'場面別', scene:'hospital', text:'「死にたい」「消えたい」という言葉があった' },
+  { category:'気分の落ち込み', type:'場面別', scene:'hospital', text:'精神的につらいと話していた' },
+  { category:'気分の落ち込み', type:'場面別', scene:'hospital', text:'医師に相談したほうがよいと感じた' },
+
+  /* ── 外出減少 ───────────────────────── */
+  { category:'外出減少', type:'共通',  scene:'_',        text:'外出する回数が減った' },
+  { category:'外出減少', type:'共通',  scene:'_',        text:'家にこもりがちになった' },
+  { category:'外出減少', type:'共通',  scene:'_',        text:'外出を嫌がるようになった' },
+  { category:'外出減少', type:'場面別', scene:'entrance', text:'外出の準備をしなくなった' },
+  { category:'外出減少', type:'場面別', scene:'entrance', text:'靴を履こうとしなかった' },
+  { category:'外出減少', type:'場面別', scene:'entrance', text:'外に出る気力がなさそうだった' },
+  { category:'外出減少', type:'場面別', scene:'living',   text:'一日中家にいることが増えた' },
+  { category:'外出減少', type:'場面別', scene:'living',   text:'外に出たがらなかった' },
+  { category:'外出減少', type:'場面別', scene:'living',   text:'散歩に行かなくなった' },
+  { category:'外出減少', type:'場面別', scene:'living',   text:'友人との外出がなくなった' },
+  { category:'外出減少', type:'場面別', scene:'outing',   text:'外出先で早く帰りたがった' },
+  { category:'外出減少', type:'場面別', scene:'outing',   text:'人混みを避けるようになった' },
+  { category:'外出減少', type:'場面別', scene:'outing',   text:'遠出をしなくなった' },
+
+  /* ── その他（共通のみ） ─────────────── */
+  { category:'その他', type:'共通', scene:'_', text:'気になる様子があった' },
+  { category:'その他', type:'共通', scene:'_', text:'変化があったと感じた' },
+  { category:'その他', type:'共通', scene:'_', text:'いつもと違う様子だった' },
+];
+
+/* 実行時に参照するデータ（fetch成功時はJSONで上書き） */
+let HINT_MASTER = FALLBACK_HINTS;
+/* fetch状態を React に伝えるためのコールバック（App側でセット） */
+let _onHintMasterUpdated = null;
+
+/* input-examples.json を非同期で取得し HINT_MASTER を更新する */
+fetch('./input-examples.json')
+  .then(r => { if (!r.ok) throw new Error('fetch failed'); return r.json(); })
+  .then(data => {
+    HINT_MASTER = data.map(jsonEntryToInternal);
+    if (_onHintMasterUpdated) _onHintMasterUpdated();
+  })
+  .catch(() => {
+    /* 読み込み失敗 → フォールバックのまま継続 */
+    if (_onHintMasterUpdated) _onHintMasterUpdated('error');
+  });
+
+/*
+  入力例を取得する関数
+  ─ cats が空 → null（入力例セクション非表示）
+  ─ 共通（type:'共通'）は常に先に表示
+  ─ 場面別（type:'場面別'）は sceneId が一致したときのみ追加表示
+*/
+const getHints = (cats, sceneId) => {
+  if (!cats || cats.length === 0) return null; /* null = セクション非表示 */
+  const seen  = new Set();
+  const hints = [];
+  const push  = text => { if (!seen.has(text)) { seen.add(text); hints.push(text); } };
+  cats.forEach(cat => {
+    /* ① 共通入力例 */
+    HINT_MASTER.filter(h => h.category === cat && h.type === '共通' && h.scene === '_').forEach(h => push(h.text));
+    /* ② 場面別入力例（場面が選択されているとき追加） */
+    if (sceneId) {
+      HINT_MASTER.filter(h => h.category === cat && h.type === '場面別' && h.scene === sceneId).forEach(h => push(h.text));
+    }
+  });
+  return hints.length === 0 ? [] : hints; /* [] = "自由に入力してください" */
+};
 
 function RecordForm({ persons, initialPersonId, onBack, onSave, initial = null }) {
   const today = new Date().toISOString().split('T')[0];
@@ -1261,7 +1629,11 @@ function RecordForm({ persons, initialPersonId, onBack, onSave, initial = null }
   const memoRef = React.useRef(null);
   const [hintToast, setHintToast] = useState(false);
   const addHint = h => {
-    setMemo(prev => prev ? prev + '\n' + h : h);
+    setMemo(prev => {
+      const lines = prev ? prev.split('\n') : [];
+      if (lines.includes(h)) return prev; /* 重複追加しない */
+      return prev ? prev + '\n' + h : h;
+    });
     setHintToast(true);
     setTimeout(() => setHintToast(false), 1800);
     setTimeout(() => memoRef.current?.scrollIntoView({ behavior:'smooth', block:'center' }), 50);
@@ -1336,27 +1708,49 @@ function RecordForm({ persons, initialPersonId, onBack, onSave, initial = null }
               placeholder="場所や場面を入力してください" autoFocus />
           )}
 
-          {/* 入力例ヒント */}
-          {scene && scene.hints.length > 0 && (
-            <div style={{ marginTop:10, background:'var(--primary-bg)', borderRadius:10, padding:'10px 14px' }}>
-              <div style={{ fontSize:12, fontWeight:700, color:'var(--primary-dark)', marginBottom:6 }}>
-                {scene.icon} {scene.label}での入力例（タップで追加）
+          {/* 入力例ヒント（気になったこと×気づいた場面）*/}
+          {(() => {
+            const hints = getHints(cats, sceneId);
+            if (hints === null) return null; /* カテゴリ未選択 → 非表示 */
+            const sceneObj = SCENES.find(s => s.id === sceneId);
+            /* ラベル */
+            let hintLabel = '';
+            if (cats.length === 1 && sceneObj) {
+              hintLabel = `${cats[0]} × ${sceneObj.icon}${sceneObj.label} の入力例`;
+            } else if (cats.length === 1) {
+              hintLabel = `${cats[0]} の入力例`;
+            } else if (cats.length > 1 && sceneObj) {
+              hintLabel = `${sceneObj.icon}${sceneObj.label} での入力例`;
+            } else {
+              hintLabel = '入力例';
+            }
+            return (
+              <div style={{ marginTop:10, background:'var(--primary-bg)', borderRadius:10, padding:'10px 14px' }}>
+                <div style={{ fontSize:12, fontWeight:700, color:'var(--primary-dark)', marginBottom:6 }}>
+                  {hintLabel}（タップで詳細メモに追加）
+                </div>
+                {hints.length === 0 ? (
+                  <div style={{ fontSize:13, color:'var(--text-sub)', padding:'4px 0' }}>
+                    入力例はありません。詳細メモに自由に入力してください。
+                  </div>
+                ) : (
+                  hints.map(h => (
+                    <button key={h}
+                      onClick={() => addHint(h)}
+                      style={{
+                        display:'flex', alignItems:'center', gap:8, width:'100%',
+                        background:'none', border:'none', cursor:'pointer',
+                        padding:'6px 0', textAlign:'left', fontFamily:'inherit',
+                        borderBottom:'1px solid rgba(74,144,164,.12)',
+                      }}>
+                      <span style={{ fontSize:16, color:'var(--primary)', flexShrink:0, fontWeight:700 }}>＋</span>
+                      <span style={{ fontSize:13, color:'var(--text-sub)', lineHeight:1.5 }}>{h}</span>
+                    </button>
+                  ))
+                )}
               </div>
-              {scene.hints.map(h => (
-                <button key={h}
-                  onClick={() => addHint(h)}
-                  style={{
-                    display:'flex', alignItems:'center', gap:8, width:'100%',
-                    background:'none', border:'none', cursor:'pointer',
-                    padding:'6px 0', textAlign:'left', fontFamily:'inherit',
-                    borderBottom:'1px solid rgba(74,144,164,.12)',
-                  }}>
-                  <span style={{ fontSize:16, color:'var(--primary)', flexShrink:0, fontWeight:700 }}>＋</span>
-                  <span style={{ fontSize:13, color:'var(--text-sub)', lineHeight:1.5 }}>{h}</span>
-                </button>
-              ))}
-            </div>
-          )}
+            );
+          })()}
         </div>
 
         {/* ─ 詳細メモ ─ */}
@@ -1596,21 +1990,11 @@ function ReportScreen({ persons, records, checkHistory }) {
   checkHistory.filter(c => c.personId === Number(pid))
     .sort((a,b) => a.date.localeCompare(b.date))
     .forEach(c => {
-      const m = c.date.slice(0,7);
+      const m = c.targetMonth || c.date.slice(0,7);
       if (!trendMonths[m]) trendMonths[m] = 0;
-      trendMonths[m] += c.count;
+      trendMonths[m] = Math.max(trendMonths[m], c.count || 0);
     });
   const trendKeys = Object.keys(trendMonths).sort().slice(-6);
-  const getTrendLabel = () => {
-    if (trendKeys.length < 3) return null;
-    const half   = Math.floor(trendKeys.length / 2);
-    const recent = trendKeys.slice(-half).reduce((s,m) => s + trendMonths[m], 0) / half;
-    const older  = trendKeys.slice(0, half).reduce((s,m) => s + trendMonths[m], 0) / half;
-    if (recent > older * 1.25) return { label:'増加傾向あり', color:'var(--accent)', icon:'📈' };
-    if (recent < older * 0.75) return { label:'改善傾向あり', color:'var(--green)',  icon:'📉' };
-    return                            { label:'横ばい',        color:'var(--primary)',icon:'➡️' };
-  };
-  const trendLabel = getTrendLabel();
   const fmtMoFull = m => { const [y,mo] = m.split('-'); return `${y}年${Number(mo)}月`; };
 
   return (
@@ -1696,44 +2080,69 @@ function ReportScreen({ persons, records, checkHistory }) {
                 }
               </div>
 
-              {/* ── 生活変化チェックまとめ ── */}
+              {/* ── 生活変化チェックまとめ（月別） ── */}
               <div style={{ marginBottom:16 }}>
-                <div className="report-h3">【生活変化チェック】 傾向の確認</div>
+                <div className="report-h3">【生活変化チェック】 月ごとの振り返り</div>
                 {(() => {
-                  const qCounts = {};
-                  myChecks.forEach(c => c.checkedIds?.forEach(id => { qCounts[id] = (qCounts[id]||0)+1; }));
-                  const entries = Object.entries(qCounts).sort((a,b)=>b[1]-a[1]);
-                  return entries.length > 0
-                    ? entries.map(([qid, cnt]) => {
-                        const q = CHECK_QS.find(x => x.id === qid);
-                        return (
-                          <div key={qid} className="report-row">
-                            <span>☑ {q?.text||qid}</span>
-                            <span style={{ fontWeight:700, color: cnt>=2 ? 'var(--accent)' : 'var(--text)' }}>{cnt}回</span>
+                  if (myChecks.length === 0) return (
+                    <div style={{ fontSize:13, color:'var(--text-sub)', padding:'4px 0' }}>この期間のチェック記録はありません</div>
+                  );
+                  /* 月別にまとめる */
+                  const moMap = {};
+                  myChecks.forEach(c => {
+                    const m = c.targetMonth || c.date.slice(0,7);
+                    if (!moMap[m]) moMap[m] = { ids: new Set(), impression:'', note:'' };
+                    (c.checkedIds||[]).forEach(id => moMap[m].ids.add(id));
+                    if (c.impression) moMap[m].impression = c.impression;
+                    if (c.note)       moMap[m].note = c.note;
+                  });
+                  return Object.keys(moMap).sort().reverse().map(m => {
+                    const items = [...moMap[m].ids].map(id => CHECK_QS.find(q => q.id === id)?.text).filter(Boolean);
+                    return (
+                      <div key={m} style={{ marginBottom:14, paddingBottom:14, borderBottom:'1px solid var(--border)' }}>
+                        <div style={{ fontSize:14, fontWeight:700, color:'var(--primary-dark)', marginBottom:6 }}>
+                          【{fmtTargetMonth(m)}の生活変化チェック】
+                        </div>
+                        {moMap[m].impression && (
+                          <div className="report-row" style={{ marginBottom:4 }}>
+                            <span>家族の印象</span>
+                            <span style={{ fontWeight:700 }}>{moMap[m].impression}</span>
                           </div>
-                        );
-                      })
-                    : <div style={{ fontSize:13, color:'var(--text-sub)', padding:'4px 0' }}>この期間のチェック記録はありません</div>;
+                        )}
+                        {items.length > 0 && (
+                          <div style={{ marginBottom: moMap[m].note ? 6 : 0 }}>
+                            <div style={{ fontSize:12, color:'var(--text-sub)', marginBottom:4 }}>選択した項目</div>
+                            {items.map(t => (
+                              <div key={t} style={{ fontSize:13, padding:'2px 0 2px 10px' }}>・{t}</div>
+                            ))}
+                          </div>
+                        )}
+                        {moMap[m].note && (
+                          <div style={{ marginTop:6 }}>
+                            <div style={{ fontSize:12, color:'var(--text-sub)', marginBottom:4 }}>この1か月を振り返って感じたこと</div>
+                            <div style={{ fontSize:13, lineHeight:1.7, whiteSpace:'pre-wrap', color:'var(--text-sub)' }}>{moMap[m].note}</div>
+                          </div>
+                        )}
+                        {items.length === 0 && !moMap[m].note && (
+                          <div style={{ fontSize:13, color:'var(--text-sub)', paddingLeft:10 }}>特に気になる変化はありませんでした</div>
+                        )}
+                      </div>
+                    );
+                  });
                 })()}
               </div>
 
               {/* ─ 変化の推移 ─ */}
               {trendKeys.length > 0 && (
                 <div style={{ marginBottom:16 }}>
-                  <div className="report-h3">変化の推移</div>
-                  {trendLabel && (
-                    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:8 }}>
-                      <span style={{ fontSize:12, color:'var(--text-sub)' }}>全期間の傾向</span>
-                      <span style={{ fontSize:13, fontWeight:700, color:trendLabel.color }}>{trendLabel.icon} {trendLabel.label}</span>
-                    </div>
-                  )}
+                  <div className="report-h3">変化の推移（気になった項目数）</div>
                   {trendKeys.map((m, i) => {
                     const cnt  = trendMonths[m];
                     const prev = i > 0 ? trendMonths[trendKeys[i-1]] : null;
                     const diff = prev !== null ? cnt - prev : null;
                     return (
                       <div key={m} className="report-row">
-                        <span>{fmtMoFull(m)}&emsp;チェック項目 {cnt}件</span>
+                        <span>{fmtMoFull(m)}&emsp;{cnt}項目</span>
                         {diff !== null && diff !== 0 && (
                           <span style={{ fontWeight:700, color: diff > 0 ? 'var(--accent)' : 'var(--green)', fontSize:12 }}>
                             {diff > 0 ? `▲${diff}` : `▼${Math.abs(diff)}`}
@@ -1787,23 +2196,31 @@ function ReportScreen({ persons, records, checkHistory }) {
                       </div>`;
                     }).join('');
 
-                  /* ── 【2】生活変化チェック：月別チェック内容リスト ── */
+                  /* ── 【2】生活変化チェック：月別（印象・自由記述含む） ── */
                   const checksByMonth = {};
                   myChecks.forEach(c => {
-                    const m = c.date.slice(0,7);
-                    if (!checksByMonth[m]) checksByMonth[m] = new Set();
-                    c.checkedIds?.forEach(id => checksByMonth[m].add(id));
+                    const m = c.targetMonth || c.date.slice(0,7);
+                    if (!checksByMonth[m]) checksByMonth[m] = { ids: new Set(), impression:'', note:'' };
+                    (c.checkedIds||[]).forEach(id => checksByMonth[m].ids.add(id));
+                    if (c.impression) checksByMonth[m].impression = c.impression;
+                    if (c.note)       checksByMonth[m].note = c.note;
                   });
                   const checkMonthRows = Object.keys(checksByMonth).sort().reverse().map(m => {
                     const [y, mo] = m.split('-');
-                    const items = [...checksByMonth[m]]
+                    const items = [...checksByMonth[m].ids]
                       .map(id => CHECK_QS.find(q => q.id === id)?.text)
                       .filter(Boolean)
                       .map(t => `<div style="padding:2px 0 2px 10px;font-size:12px">・${t}</div>`)
                       .join('');
-                    return `<div style="margin-bottom:10px">
-                      <div style="font-size:13px;font-weight:700;color:#2E6E82;margin-bottom:4px">${y}年${Number(mo)}月</div>
-                      ${items || '<div style="font-size:12px;color:#6B7F8E;padding-left:10px">変化なし</div>'}
+                    const impRow = checksByMonth[m].impression
+                      ? `<div style="font-size:12px;margin:4px 0"><b>家族の印象：</b>${checksByMonth[m].impression}</div>` : '';
+                    const noteRow = checksByMonth[m].note
+                      ? `<div style="font-size:12px;color:#6B7F8E;margin-top:4px;white-space:pre-wrap">${checksByMonth[m].note}</div>` : '';
+                    return `<div style="margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #DDE8ED">
+                      <div style="font-size:13px;font-weight:700;color:#2E6E82;margin-bottom:4px">【${y}年${Number(mo)}月の生活変化チェック】</div>
+                      ${impRow}
+                      ${items ? `<div style="font-size:12px;margin-top:4px">選択した項目</div>${items}` : '<div style="font-size:12px;color:#6B7F8E;padding-left:10px">特に気になる変化はありませんでした</div>'}
+                      ${noteRow}
                     </div>`;
                   }).join('');
 
@@ -1873,16 +2290,11 @@ function PersonCard({ person, onUpdate, onDelete }) {
     onUpdate({ ...person, name: editName, relation: editRel, emoji: editEmoji });
   };
 
-  const interval = person.checkInterval || '毎月';
-  const notify   = person.notifyTime    || '';
-  const due      = isCheckDue(person);
-
-  let nextDateStr = null;
-  if (person.lastCheckDate && CHECK_INTERVAL_DAYS[interval]) {
-    const d = new Date(person.lastCheckDate);
-    d.setDate(d.getDate() + CHECK_INTERVAL_DAYS[interval]);
-    nextDateStr = d.toLocaleDateString('ja-JP');
-  }
+  const checkDay    = person.checkDay || '1';
+  const notify      = person.notifyTime || '';
+  const due         = isCheckDue(person);
+  const nextDate    = getNextCheckDate(person);
+  const nextDateStr = `${nextDate.getFullYear()}年${nextDate.getMonth()+1}月${nextDate.getDate()}日`;
 
   return (
     <div className="card" style={{ padding:0, overflow:'hidden', marginBottom:10 }}>
@@ -1894,7 +2306,7 @@ function PersonCard({ person, onUpdate, onDelete }) {
         <div style={{ flex:1 }}>
           <div style={{ fontWeight:700, fontSize:15, color:'var(--text)' }}>{person.name}（{person.relation}）</div>
           <div style={{ fontSize:12, color:'var(--text-sub)', marginTop:2 }}>
-            チェック: {interval}
+            毎月{checkDay === '末' ? '末日' : `${checkDay}日`}にチェック
             {due && <span style={{ color:'var(--accent)', fontWeight:700, marginLeft:8 }}>🔔 時期です</span>}
           </div>
         </div>
@@ -1935,27 +2347,33 @@ function PersonCard({ person, onUpdate, onDelete }) {
           {/* 前回 / 次回 */}
           <div style={{ background:'var(--bg)', borderRadius:10, padding:'10px 12px', marginBottom:12 }}>
             <div style={{ display:'flex', justifyContent:'space-between', padding:'5px 0', borderBottom:'1px solid var(--border)' }}>
-              <span style={{ fontSize:13, color:'var(--text-sub)' }}>前回チェック日</span>
-              <span style={{ fontSize:13, fontWeight:700 }}>{person.lastCheckDate ? fmtDateSlash(person.lastCheckDate) : '未実施'}</span>
+              <span style={{ fontSize:13, color:'var(--text-sub)' }}>前回チェック</span>
+              <span style={{ fontSize:13, fontWeight:700 }}>
+                {person.lastCheckDate ? fmtTargetMonth(person.lastCheckDate.slice(0,7)) : '未実施'}
+              </span>
             </div>
             <div style={{ display:'flex', justifyContent:'space-between', padding:'5px 0' }}>
-              <span style={{ fontSize:13, color:'var(--text-sub)' }}>次回チェック目安</span>
+              <span style={{ fontSize:13, color:'var(--text-sub)' }}>次回チェック予定日</span>
               <span style={{ fontSize:13, fontWeight:700, color: due ? 'var(--accent)' : 'var(--text)' }}>
-                {nextDateStr || '─'}{due && nextDateStr && ' ⚠'}
+                {nextDateStr}{due && ' ⚠'}
               </span>
             </div>
           </div>
 
-          {/* チェック間隔 */}
-          <label className="form-label">チェック間隔</label>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginBottom:12 }}>
-            {['毎週','2週間ごと','毎月','設定しない'].map(opt => {
-              const active = interval === opt;
+          {/* 毎月のチェック日 */}
+          <label className="form-label">毎月のチェック日</label>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:6, marginBottom:12 }}>
+            {CHECK_DAYS.map(d => {
+              const active = checkDay === d;
               return (
-                <button key={opt} onClick={() => onUpdate({ ...person, checkInterval: opt })}
-                  style={{ padding:'10px 6px', borderRadius:10, border:`2px solid ${active?'var(--primary)':'var(--border)'}`, background: active?'var(--primary-bg)':'var(--surface)', color: active?'var(--primary)':'var(--text-sub)', fontWeight: active?700:500, fontSize:13, cursor:'pointer', fontFamily:'inherit', display:'flex', flexDirection:'column', alignItems:'center', gap:3 }}>
-                  <span style={{ fontSize:16 }}>{opt==='毎週'?'📅':opt==='2週間ごと'?'🗓':opt==='毎月'?'📆':'🔕'}</span>
-                  {opt}
+                <button key={d} onClick={() => onUpdate({ ...person, checkDay: d })}
+                  style={{ padding:'10px 4px', borderRadius:10,
+                    border:`2px solid ${active?'var(--primary)':'var(--border)'}`,
+                    background: active?'var(--primary-bg)':'var(--surface)',
+                    color: active?'var(--primary)':'var(--text-sub)',
+                    fontWeight: active?700:500, fontSize:14,
+                    cursor:'pointer', fontFamily:'inherit', textAlign:'center' }}>
+                  {d === '末' ? '末日' : `${d}日`}
                 </button>
               );
             })}
@@ -1989,18 +2407,164 @@ function PersonCard({ person, onUpdate, onDelete }) {
   );
 }
 
+/* ══════════════════════════════════════════════════════
+   はじめに・使い方ガイドページ
+══════════════════════════════════════════════════════ */
+function GuideScreen({ onBack }) {
+  const stepStyle = { display:'flex', gap:14, alignItems:'flex-start', padding:'14px 0', borderBottom:'1px solid var(--border)' };
+  const stepNumStyle = {
+    flexShrink:0, width:32, height:32, borderRadius:'50%',
+    background:'var(--primary)', color:'#fff',
+    display:'flex', alignItems:'center', justifyContent:'center',
+    fontSize:15, fontWeight:800,
+  };
+  const qaStyle = { padding:'14px 0', borderBottom:'1px solid var(--border)' };
+  const secTitle = { fontSize:17, fontWeight:800, color:'var(--text)', margin:'22px 0 10px', display:'flex', alignItems:'center', gap:8 };
+
+  return (
+    <div className="page anim">
+      <div className="page-header" style={{ position:'relative' }}>
+        <button onClick={onBack} style={{
+          position:'absolute', left:0, top:'50%', transform:'translateY(-50%)',
+          background:'none', border:'none', cursor:'pointer', padding:'8px 12px',
+          color:'var(--primary)', fontSize:15, fontWeight:700, fontFamily:'inherit',
+          display:'flex', alignItems:'center', gap:4,
+        }}>
+          <Ic n="left" s={16} c="var(--primary)" />戻る
+        </button>
+        <h1>はじめに・使い方</h1>
+        <p>アプリの概要と基本操作</p>
+      </div>
+      <div className="page-body" style={{ paddingBottom:48 }}>
+
+        {/* ── 1. はじめに ── */}
+        <div style={secTitle}>📋 はじめに</div>
+        <div className="card" style={{ fontSize:15, lineHeight:1.85, color:'var(--text)' }}>
+          <p style={{ margin:'0 0 12px' }}>
+            <strong>実家見守りノート</strong>は、離れて暮らす家族や同居する家族の生活の変化、気になった出来事を記録するためのアプリです。
+          </p>
+          <p style={{ margin:'0 0 12px' }}>
+            記録した内容は、医師・ケアマネジャー・地域包括支援センターなどへ相談するときに活用できます。
+          </p>
+          <div style={{
+            background:'#FFF8E1', border:'1px solid #FFE082', borderRadius:10,
+            padding:'12px 14px', fontSize:13, color:'#795548', lineHeight:1.7,
+          }}>
+            ⚠️ このアプリは、病気や認知症などの<strong>診断を行うものではありません</strong>。
+          </div>
+        </div>
+
+        {/* ── 2. このアプリについて ── */}
+        <div style={secTitle}>📱 このアプリについて</div>
+        <div className="card">
+          <div style={{ fontWeight:700, fontSize:14, color:'var(--primary)', marginBottom:8 }}>記録できること</div>
+          {[
+            '📝 日々の気づき記録',
+            '📅 月1回の生活変化チェック',
+            '📞 相談先・連絡先の登録',
+            '📄 相談メモの作成',
+            '🖨️ PDF保存・印刷',
+            '💾 バックアップ・復元',
+          ].map(item => (
+            <div key={item} style={{ padding:'7px 0', fontSize:14, color:'var(--text)', borderBottom:'1px solid var(--border)', lineHeight:1.5 }}>
+              {item}
+            </div>
+          ))}
+        </div>
+
+        <div className="card" style={{ marginTop:12 }}>
+          <div style={{ fontWeight:700, fontSize:14, color:'var(--primary)', marginBottom:10 }}>データの保存</div>
+          <p style={{ margin:'0 0 8px', fontSize:14, color:'var(--text)', lineHeight:1.75 }}>
+            📱 記録したデータは、<strong>お使いの端末内のみ</strong>に保存されます。
+          </p>
+          <p style={{ margin:0, fontSize:14, color:'var(--text)', lineHeight:1.75 }}>
+            🔒 外部サーバーへ自動送信しません。
+          </p>
+        </div>
+
+        <div className="card" style={{ marginTop:12, background:'#FFF8E1', border:'1px solid #FFE082' }}>
+          <div style={{ fontWeight:700, fontSize:14, color:'#795548', marginBottom:8 }}>⚠️ 注意事項</div>
+          <p style={{ margin:0, fontSize:13, color:'#5D4037', lineHeight:1.8 }}>
+            このアプリは、医療・介護・福祉の相談を補助するための記録アプリです。<br />
+            体調や生活に急な変化がある場合は、アプリの記録だけで判断せず、医療機関・ケアマネジャー・地域包括支援センターなどへ相談してください。
+          </p>
+        </div>
+
+        {/* ── 3. 使い方 ── */}
+        <div style={secTitle}>🚀 使い方</div>
+        <div className="card">
+          {[
+            {
+              num:'①', title:'家族を登録する',
+              body:'設定画面の「家族一覧」から、記録する家族を登録します。',
+            },
+            {
+              num:'②', title:'気づいたことを記録する',
+              body:'ホーム画面の「気づき記録を追加」から、気になった出来事を記録します。\n例）薬の飲み忘れ・同じ話を繰り返す・転倒しそうになった・外出する回数が減った\n入力例をタップすると詳細メモへ追加できます。',
+            },
+            {
+              num:'③', title:'月に1回、生活変化チェックをする',
+              body:'「今月の生活変化チェック」から、この1か月の様子を振り返ります。気になった項目・全体的な印象・感じたことを記録します。',
+            },
+            {
+              num:'④', title:'記録を振り返る',
+              body:'下部タブの「記録」から、気づき記録と生活変化チェックを月ごとに確認できます。鉛筆マークから修正もできます。',
+            },
+            {
+              num:'⑤', title:'相談メモを作成する',
+              body:'下部タブの「相談メモ」から、医師やケアマネジャーへ見せる相談資料を作成できます。PDFとして保存・印刷できます。',
+            },
+            {
+              num:'⑥', title:'バックアップを作成する',
+              body:'設定画面の「バックアップを作成する」から定期的に保存してください。機種変更時は「バックアップから復元する」を利用できます。',
+            },
+          ].map((step, i) => (
+            <div key={step.num} style={{ ...stepStyle, ...(i === 5 ? { borderBottom:'none' } : {}) }}>
+              <div style={stepNumStyle}>{step.num}</div>
+              <div style={{ flex:1 }}>
+                <div style={{ fontSize:15, fontWeight:700, color:'var(--text)', marginBottom:5 }}>{step.title}</div>
+                <div style={{ fontSize:13, color:'var(--text-sub)', lineHeight:1.8, whiteSpace:'pre-line' }}>{step.body}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* ── よくある質問 ── */}
+        <div style={secTitle}>❓ よくある質問</div>
+        <div className="card">
+          {[
+            { q:'データはどこに保存されますか？',          a:'お使いの端末内に保存されます。' },
+            { q:'個人情報は外部へ送信されますか？',        a:'外部サーバーへ自動送信しません。' },
+            { q:'機種変更した場合はどうしますか？',        a:'事前にバックアップを作成し、新しい端末で復元してください。' },
+            { q:'このアプリで病気の判断はできますか？',    a:'できません。気になる変化がある場合は、医療・介護・福祉の専門職へ相談してください。' },
+          ].map((item, i) => (
+            <div key={i} style={{ ...qaStyle, ...(i === 3 ? { borderBottom:'none' } : {}) }}>
+              <div style={{ fontSize:14, fontWeight:700, color:'var(--primary)', marginBottom:5 }}>Q. {item.q}</div>
+              <div style={{ fontSize:14, color:'var(--text-sub)', lineHeight:1.75 }}>A. {item.a}</div>
+            </div>
+          ))}
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
 function SettingsScreen({ persons, records, checkHistory, onAddPerson, onUpdatePerson, onDeletePerson, onRestore }) {
   const EMOJIS = ['👨','👩','👴','👵','🧑','👦','👧'];
   const [showAdd, setShowAdd] = useState(false);
   const [name,  setName]  = useState('');
   const [rel,   setRel]   = useState('');
   const [emoji, setEmoji] = useState('👨');
-  const [checkInterval, setCheckInterval] = useState('毎月');
+  const [checkDay, setCheckDay] = useState('1');
+  const [showGuide, setShowGuide] = useState(false);
+
+  if (showGuide) return <GuideScreen onBack={() => setShowGuide(false)} />;
 
   const handleAdd = () => {
     if (!name) return;
-    onAddPerson({ id: Date.now(), name, relation: rel, emoji, checkInterval, lastCheckDate: null });
-    setShowAdd(false); setName(''); setRel(''); setEmoji('👨'); setCheckInterval('毎月');
+    onAddPerson({ id: Date.now(), name, relation: rel, emoji, checkDay, lastCheckDate: null });
+    setShowAdd(false); setName(''); setRel(''); setEmoji('👨'); setCheckDay('1');
   };
 
   return (
@@ -2042,9 +2606,9 @@ function SettingsScreen({ persons, records, checkHistory, onAddPerson, onUpdateP
               </div>
             </div>
             <div className="form-group">
-              <label className="form-label">生活変化チェックの間隔</label>
-              <select className="form-input" value={checkInterval} onChange={e => setCheckInterval(e.target.value)}>
-                {['毎週','2週間ごと','毎月','設定しない'].map(f => <option key={f} value={f}>{f}</option>)}
+              <label className="form-label">毎月のチェック日</label>
+              <select className="form-input" value={checkDay} onChange={e => setCheckDay(e.target.value)}>
+                {CHECK_DAYS.map(d => <option key={d} value={d}>{d === '末' ? '末日' : `毎月${d}日`}</option>)}
               </select>
             </div>
             <div style={{ display:'flex', gap:10 }}>
@@ -2127,6 +2691,24 @@ function SettingsScreen({ persons, records, checkHistory, onAddPerson, onUpdateP
           </label>
         </div>
 
+        {/* ── はじめに・使い方 ── */}
+        <div className="section-title" style={{ marginTop:20 }}>ガイド</div>
+        <div className="card" style={{ padding:0 }}>
+          <button
+            onClick={() => setShowGuide(true)}
+            style={{
+              width:'100%', display:'flex', alignItems:'center', justifyContent:'space-between',
+              padding:'16px', background:'none', border:'none', cursor:'pointer',
+              fontFamily:'inherit', fontSize:15, fontWeight:700, color:'var(--text)',
+            }}>
+            <span style={{ display:'flex', alignItems:'center', gap:10 }}>
+              <span style={{ fontSize:22 }}>❓</span>
+              <span>はじめに・使い方</span>
+            </span>
+            <Ic n="right" s={16} c="var(--text-light)" />
+          </button>
+        </div>
+
         <div className="section-title" style={{ marginTop:20 }}>アプリ情報</div>
         <div className="card">
           {[
@@ -2169,6 +2751,16 @@ function App() {
   const [modal,       setModal]       = useState(null);
   const [checkTarget, setCheckTarget] = useState(null); /* 家族詳細からチェックを直接開始する対象 */
   const [deleteConfirmId, setDeleteConfirmId] = useState(null); /* 削除確認ダイアログ */
+  const [hintLoadError, setHintLoadError] = useState(false); /* JSON読み込み失敗フラグ */
+  const [, forceHintUpdate] = useState(0); /* JSON読み込み完了後の再レンダリング用 */
+
+  useEffect(() => {
+    _onHintMasterUpdated = status => {
+      if (status === 'error') setHintLoadError(true);
+      forceHintUpdate(n => n + 1);
+    };
+    return () => { _onHintMasterUpdated = null; };
+  }, []);
 
   useEffect(() => { save('mmn_persons',  persons);      }, [persons]);
   useEffect(() => { save('mmn_records',  records);      }, [records]);
@@ -2194,16 +2786,18 @@ function App() {
     setDeleteConfirmId(null);
   };
 
-  const saveCheck = ({ person, ans, res, checked }) => {
+  const saveCheck = ({ person, ans, res, checked, impression, note, targetYM }) => {
     const today = new Date().toISOString().split('T')[0];
     const now   = new Date().toTimeString().slice(0,5);
+    const tm    = targetYM || today.slice(0,7);
     /* 記録として保存 */
+    const impText = impression ? `・全体的な印象：${impression}` : '';
     const rec = {
       id: Date.now(),
       date: today, time: now,
       personId: person.id,
       cats: checked.map(q => q.text),
-      memo: `生活変化チェック実施。${res.label}（${checked.length}項目）`,
+      memo: `【${fmtTargetMonth(tm)}の生活変化チェック】${impText}${note ? '\n' + note : ''}`,
       place: '', fromCheck: true,
     };
     setRecords(p => [rec, ...p]);
@@ -2212,9 +2806,12 @@ function App() {
       id: Date.now() + 1,
       personId: person.id,
       date: today,
+      targetMonth: tm,
       checkedIds: Object.entries(ans).filter(([,v]) => v).map(([k]) => k),
       count: checked.length,
       level: res.level,
+      impression: impression || '',
+      note: note || '',
     };
     setCheckHistory(p => [hist, ...p]);
     /* 家族の lastCheckDate を更新 */
@@ -2303,6 +2900,16 @@ function App() {
 
   return (
     <>
+      {/* JSON読み込み失敗バナー（記録機能は使えることを明示） */}
+      {hintLoadError && (
+        <div style={{
+          position:'fixed', top:0, left:0, right:0, zIndex:10000,
+          background:'#FFF3CD', color:'#856404', padding:'8px 16px',
+          fontSize:13, textAlign:'center', borderBottom:'1px solid #FFE69C',
+        }}>
+          入力例を読み込めませんでした。詳細メモに直接入力してください。
+        </div>
+      )}
       {renderScreen()}
       {showNav && (
         <nav className="bottom-nav">
