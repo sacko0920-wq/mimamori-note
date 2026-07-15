@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>実家見守りノート</title>
+  <title>くらしあと</title>
   <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -531,8 +531,8 @@ function HomeScreen({ persons, records, checkHistory, onNav, onRecordAdd }) {
       {/* ─ Header ─ */}
       <div style={{ padding:'48px 20px 16px', background:'linear-gradient(140deg,#4A90A4 0%,#3A7D95 100%)', flexShrink:0 }}>
         <div style={{ fontSize:12, color:'rgba(255,255,255,.75)', fontWeight:600, letterSpacing:.8 }}>{today}</div>
-        <div style={{ fontSize:22, fontWeight:800, color:'#fff', marginTop:3 }}>今日の記録</div>
-        <div style={{ fontSize:13, color:'rgba(255,255,255,.85)', marginTop:2 }}>気になったことを残しましょう</div>
+        <div style={{ fontSize:22, fontWeight:800, color:'#fff', marginTop:3 }}>くらしあと</div>
+        <div style={{ fontSize:13, color:'rgba(255,255,255,.85)', marginTop:2 }}>暮らしの小さな変化を記録し、相談につなげるアプリ</div>
         {recentCount > 0 && (
           <div style={{ marginTop:10, background:'rgba(255,255,255,.18)', borderRadius:10, padding:'8px 12px', fontSize:13, color:'#fff', display:'flex', alignItems:'center', gap:6 }}>
             <span>📝</span> 今週 {recentCount}件の記録があります
@@ -2045,7 +2045,7 @@ function ReportScreen({ persons, records, checkHistory }) {
           <>
             <div className="card" style={{ border:'2px solid var(--primary)' }}>
               <div style={{ textAlign:'center', paddingBottom:14, marginBottom:14, borderBottom:'2px solid var(--primary-bg)' }}>
-                <div style={{ fontSize:11, color:'var(--text-sub)', letterSpacing:.8 }}>実家見守りノート</div>
+                <div style={{ fontSize:11, color:'var(--text-sub)', letterSpacing:.8 }}>くらしあと</div>
                 <div style={{ fontSize:18, fontWeight:800, color:'var(--text)', marginTop:4 }}>生活変化・相談メモ</div>
                 <div style={{ fontSize:12, color:'var(--text-sub)', marginTop:4 }}>{from} 〜 {to}</div>
               </div>
@@ -2167,7 +2167,7 @@ function ReportScreen({ persons, records, checkHistory }) {
               </div>
 
               <div style={{ marginTop:14, padding:'10px 12px', background:'var(--primary-bg)', borderRadius:10, fontSize:12, color:'var(--primary-dark)', lineHeight:1.65 }}>
-                📌 このメモは、実家見守りノートで記録した内容をもとに作成されています。医師・ケアマネジャーに見せて、専門家のアドバイスを受けてください。
+                📌 このメモは、くらしあとで記録した内容をもとに作成されています。医師・ケアマネジャーに見せて、専門家のアドバイスを受けてください。
               </div>
             </div>
             <div style={{ display:'flex', gap:10, marginTop:4 }}>
@@ -2239,7 +2239,7 @@ function ReportScreen({ persons, records, checkHistory }) {
 
                   document.getElementById('print-area').innerHTML = `
                     <div class="p-header">
-                      <div><div class="p-appname">実家見守りノート</div><h1>生活変化・相談メモ</h1><p class="p-sub">${from} 〜 ${to}</p></div>
+                      <div><div class="p-appname">くらしあと</div><h1>生活変化・相談メモ</h1><p class="p-sub">${from} 〜 ${to}</p></div>
                       <div style="text-align:right"><p class="p-sub">作成日: ${new Date().toLocaleDateString('ja-JP')}</p></div>
                     </div>
 
@@ -2258,7 +2258,7 @@ function ReportScreen({ persons, records, checkHistory }) {
 
                     ${consultRows ? `<div class="p-consult-list"><h2>相談先一覧</h2>${consultRows}</div>` : ''}
 
-                    <div class="p-note">📌 このメモは実家見守りノートで記録した内容をもとに作成されています。医師・ケアマネジャーに見せて、専門家のアドバイスを受けてください。</div>
+                    <div class="p-note">📌 このメモはくらしあとで記録した内容をもとに作成されています。医師・ケアマネジャーに見せて、専門家のアドバイスを受けてください。</div>
                   `;
                   window.print();
                   setTimeout(() => { document.getElementById('print-area').innerHTML = ''; }, 1000);
@@ -2441,7 +2441,7 @@ function GuideScreen({ onBack }) {
         <div style={secTitle}>📋 はじめに</div>
         <div className="card" style={{ fontSize:15, lineHeight:1.85, color:'var(--text)' }}>
           <p style={{ margin:'0 0 12px' }}>
-            <strong>実家見守りノート</strong>は、離れて暮らす家族や同居する家族の生活の変化、気になった出来事を記録するためのアプリです。
+            <strong>くらしあと</strong>は、離れて暮らす家族や同居する家族の生活の変化、気になった出来事を記録するためのアプリです。
           </p>
           <p style={{ margin:'0 0 12px' }}>
             記録した内容は、医師・ケアマネジャー・地域包括支援センターなどへ相談するときに活用できます。
@@ -2573,7 +2573,7 @@ function SettingsScreen({ persons, records, checkHistory, onAddPerson, onUpdateP
       <div className="page-body">
         <div className="card" style={{ background:'var(--primary-bg)', border:'none', boxShadow:'none' }}>
           <div style={{ fontSize:13, color:'var(--primary-dark)', lineHeight:1.7 }}>
-            <b>実家見守りノートについて</b><br/>
+            <b>くらしあとについて</b><br/>
             家族の生活変化や気になった出来事を記録し、医師・ケアマネジャー・地域包括支援センターなどへ相談するときに役立てるための記録アプリです。データはこのデバイスにのみ保存されます。
           </div>
         </div>
@@ -2643,7 +2643,7 @@ function SettingsScreen({ persons, records, checkHistory, onAddPerson, onUpdateP
               const url  = URL.createObjectURL(blob);
               const a    = document.createElement('a');
               a.href     = url;
-              a.download = `mikamori-backup-${new Date().toISOString().slice(0,10)}.json`;
+              a.download = `kurasito-backup-${new Date().toISOString().slice(0,10)}.json`;
               a.click();
               URL.revokeObjectURL(url);
             }}
@@ -2673,7 +2673,7 @@ function SettingsScreen({ persons, records, checkHistory, onAddPerson, onUpdateP
                   try {
                     const data = JSON.parse(ev.target.result);
                     if (!data.persons && !data.records && !data.checkHistory) {
-                      alert('このファイルは実家見守りノートのバックアップファイルではありません。');
+                      alert('このファイルはくらしあとのバックアップファイルではありません。');
                       return;
                     }
                     if (window.confirm(`バックアップを復元しますか？\n\n家族: ${data.persons?.length||0}人\n記録: ${data.records?.length||0}件\nチェック: ${data.checkHistory?.length||0}件\n\n現在のデータは上書きされます。`)) {
