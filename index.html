@@ -9,30 +9,30 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
     :root {
-      --primary:       #4A90A4;
-      --primary-light: #6EB5C8;
-      --primary-dark:  #2E6E82;
-      --primary-bg:    #EAF5F8;
-      --green:         #5FAA8C;
-      --green-light:   #E6F4EF;
-      --accent:        #E8924A;
-      --accent-light:  #FDF1E6;
-      --bg:            #F6F8F9;
+      --primary:       #D4875A;
+      --primary-light: #E8A87A;
+      --primary-dark:  #B36A3A;
+      --primary-bg:    #FDF3EC;
+      --green:         #5A9E7A;
+      --green-light:   #E8F5EE;
+      --accent:        #D4875A;
+      --accent-light:  #FDF3EC;
+      --bg:            #FBF7F4;
       --surface:       #FFFFFF;
-      --text:          #1E2D3A;
-      --text-sub:      #6B7F8E;
-      --text-light:    #A8B8C4;
-      --border:        #DDE8ED;
-      --shadow:        0 2px 10px rgba(74,144,164,0.09);
-      --shadow-md:     0 4px 18px rgba(74,144,164,0.14);
+      --text:          #1F1F1F;
+      --text-sub:      #3E3E3E;
+      --text-light:    #2D2D2D;
+      --border:        #E8DDD5;
+      --shadow:        0 2px 10px rgba(180,120,80,0.10);
+      --shadow-md:     0 4px 18px rgba(180,120,80,0.16);
       --r:             16px;
       --r-sm:          10px;
-      --nav-h:         68px;
+      --nav-h:         80px;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
-      background: #B8D4DC;
+      background: #C8B5A0;
       display: flex; justify-content: center; align-items: center; min-height: 100vh;
     }
     #root {
@@ -55,8 +55,8 @@
       border-bottom: 1px solid var(--border);
       flex-shrink: 0;
     }
-    .page-header h1 { font-size: 18px; font-weight: 800; color: var(--text); }
-    .page-header p  { font-size: 13px; color: var(--text-sub); margin-top: 2px; }
+    .page-header h1 { font-size: 26px; font-weight: 800; color: var(--text); }
+    .page-header p  { font-size: 18px; color: var(--text-sub); margin-top: 4px; line-height: 1.5; }
     .page-body {
       flex: 1; overflow-y: auto; padding: 16px;
       padding-bottom: calc(var(--nav-h) + 16px);
@@ -73,110 +73,112 @@
       padding: 0 4px 8px; z-index: 100;
     }
     .nav-btn {
-      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
-      padding: 8px 4px; border: none; background: none; cursor: pointer;
-      color: var(--text-light); font-size: 10px; transition: color .2s;
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+      padding: 6px 4px; border: none; background: none; cursor: pointer;
+      color: #5A5A5A; font-size: 15px; font-weight: 700; transition: color .2s;
     }
-    .nav-btn.active { color: var(--primary); }
+    .nav-btn.active { color: var(--primary); font-weight: 800; }
 
     /* ── Cards ── */
-    .card { background: var(--surface); border-radius: var(--r); padding: 16px; box-shadow: var(--shadow); margin-bottom: 12px; }
-    .card-title { font-size: 13px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .card { background: var(--surface); border-radius: var(--r); padding: 18px 16px; box-shadow: var(--shadow); margin-bottom: 12px; }
+    .card-title { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: .3px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
 
     /* ── Buttons ── */
     .btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 6px;
       border: none; cursor: pointer; transition: all .18s; font-family: inherit;
-      border-radius: 50px;
+      border-radius: 50px; min-height: 52px;
     }
     .btn-full { width: 100%; }
-    .btn-primary { background: var(--primary); color: #fff; padding: 14px 20px; font-size: 15px; font-weight: 700; }
+    .btn-primary { background: var(--primary); color: #fff; padding: 15px 20px; font-size: 18px; font-weight: 700; }
     .btn-primary:active { background: var(--primary-dark); transform: scale(.98); }
-    .btn-green  { background: var(--green);   color: #fff; padding: 14px 20px; font-size: 15px; font-weight: 700; }
-    .btn-orange { background: var(--accent);  color: #fff; padding: 14px 20px; font-size: 15px; font-weight: 700; }
-    .btn-ghost  { background: var(--primary-bg); color: var(--primary); padding: 14px 20px; font-size: 15px; font-weight: 700; }
-    .btn-outline{ background: #fff; color: var(--primary); border: 2px solid var(--primary); padding: 12px 20px; font-size: 14px; font-weight: 700; }
-    .btn-sm     { padding: 8px 14px; font-size: 13px; border-radius: 20px; }
-    .btn-icon   { background: var(--primary-bg); color: var(--primary); width: 36px; height: 36px; border-radius: 50%; padding: 0; }
+    .btn-green  { background: var(--green);   color: #fff; padding: 15px 20px; font-size: 18px; font-weight: 700; }
+    .btn-orange { background: var(--accent);  color: #fff; padding: 15px 20px; font-size: 18px; font-weight: 700; }
+    .btn-ghost  { background: var(--primary-bg); color: var(--primary-dark); padding: 15px 20px; font-size: 18px; font-weight: 700; }
+    .btn-outline{ background: #fff; color: var(--primary-dark); border: 2px solid var(--primary); padding: 13px 20px; font-size: 18px; font-weight: 700; }
+    .btn-sm     { padding: 10px 16px; font-size: 15px; border-radius: 20px; min-height: 44px; }
+    .btn-icon   { background: var(--primary-bg); color: var(--primary); width: 40px; height: 40px; border-radius: 50%; padding: 0; min-height: unset; }
 
     /* ── Big action buttons (home) ── */
     .action-btn {
       display: flex; align-items: center; gap: 14px;
-      padding: 18px 20px; border-radius: var(--r);
+      padding: 20px; border-radius: var(--r);
       border: none; cursor: pointer; transition: transform .15s, box-shadow .15s;
       text-align: left; width: 100%; font-family: inherit; margin-bottom: 10px;
-      box-shadow: var(--shadow);
+      box-shadow: var(--shadow); min-height: 72px;
     }
     .action-btn:active { transform: scale(.98); box-shadow: var(--shadow-md); }
-    .action-btn-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
-    .action-btn-label { font-size: 15px; font-weight: 700; }
-    .action-btn-sub   { font-size: 12px; margin-top: 2px; opacity: .8; }
+    .action-btn-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+    .action-btn-label { font-size: 20px; font-weight: 800; }
+    .action-btn-sub   { font-size: 17px; margin-top: 4px; opacity: .95; }
 
     /* ── Form ── */
-    .form-group { margin-bottom: 14px; }
-    .form-label { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; display: block; }
+    .form-group { margin-bottom: 18px; }
+    .form-label { font-size: 19px; font-weight: 600; color: var(--text); margin-bottom: 8px; display: block; }
     .form-input {
-      width: 100%; padding: 11px 13px; border-radius: var(--r-sm);
-      border: 1.5px solid var(--border); font-size: 15px; color: var(--text);
+      width: 100%; padding: 14px 15px; border-radius: var(--r-sm);
+      border: 1.5px solid var(--border); font-size: 17px; color: var(--text);
       background: var(--surface); outline: none; font-family: inherit; transition: border-color .2s;
+      min-height: 52px;
     }
     .form-input:focus { border-color: var(--primary); }
-    .form-textarea { resize: none; height: 84px; }
+    .form-textarea { resize: none; height: 100px; min-height: unset; }
 
     /* ── Chips ── */
-    .chip-group { display: flex; flex-wrap: wrap; gap: 7px; }
+    .chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
     .chip {
-      padding: 7px 13px; border-radius: 20px;
+      padding: 10px 16px; border-radius: 20px;
       border: 1.5px solid var(--border); background: var(--surface);
-      font-size: 13px; color: var(--text); cursor: pointer; transition: all .2s; font-family: inherit;
+      font-size: 17px; color: var(--text); cursor: pointer; transition: all .2s; font-family: inherit;
+      min-height: 48px; display: inline-flex; align-items: center;
     }
     .chip.on { background: var(--primary); border-color: var(--primary); color: #fff; }
 
     /* ── Checkboxes ── */
     .check-item {
-      display: flex; align-items: flex-start; gap: 12px;
-      padding: 13px 15px; margin-bottom: 8px;
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 15px 16px; margin-bottom: 10px;
       background: var(--surface); border-radius: var(--r-sm);
       border: 1.5px solid var(--border); cursor: pointer; transition: all .2s;
     }
     .check-item.on { border-color: var(--primary); background: var(--primary-bg); }
     .checkbox {
-      width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border);
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+      width: 26px; height: 26px; border-radius: 7px; border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;
       transition: all .2s;
     }
     .check-item.on .checkbox { background: var(--primary); border-color: var(--primary); }
 
     /* ── Progress ── */
-    .progress-bar { height: 4px; background: var(--border); border-radius: 2px; margin-top: 10px; }
-    .progress-fill { height: 100%; border-radius: 2px; background: var(--primary); transition: width .3s; }
+    .progress-bar { height: 5px; background: var(--border); border-radius: 3px; margin-top: 10px; }
+    .progress-fill { height: 100%; border-radius: 3px; background: var(--primary); transition: width .3s; }
 
     /* ── Timeline / Records ── */
-    .tl-item { display: flex; gap: 12px; margin-bottom: 16px; position: relative; }
-    .tl-item::before { content:''; position: absolute; left: 19px; top: 38px; bottom: -16px; width: 2px; background: var(--border); }
+    .tl-item { display: flex; gap: 12px; margin-bottom: 18px; position: relative; }
+    .tl-item::before { content:''; position: absolute; left: 20px; top: 42px; bottom: -18px; width: 2px; background: var(--border); }
     .tl-item:last-child::before { display: none; }
-    .tl-dot { width: 40px; height: 40px; border-radius: 50%; background: var(--primary-bg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 18px; }
-    .tl-date  { font-size: 11px; color: var(--text-sub); }
-    .tl-title { font-size: 14px; font-weight: 700; color: var(--text); margin: 2px 0; }
-    .tl-body  { font-size: 13px; color: var(--text-sub); line-height: 1.55; }
+    .tl-dot { width: 42px; height: 42px; border-radius: 50%; background: var(--primary-bg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 20px; }
+    .tl-date  { font-size: 17px; color: var(--text-sub); font-weight: 600; }
+    .tl-title { font-size: 19px; font-weight: 700; color: var(--text); margin: 3px 0; }
+    .tl-body  { font-size: 17px; color: var(--text); line-height: 1.7; }
 
     /* ── Family list row (home, compact) ── */
     .family-row {
-      display: flex; align-items: flex-start; gap: 12px;
-      padding: 14px 16px;
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 16px;
       background: var(--surface); border-radius: var(--r);
       border: 1px solid var(--border); margin-bottom: 10px;
       cursor: pointer; transition: border-color .2s, box-shadow .2s;
       box-shadow: var(--shadow);
     }
     .family-row:active { border-color: var(--primary); box-shadow: var(--shadow-md); }
-    .family-emoji { font-size: 26px; width: 40px; text-align: center; flex-shrink: 0; padding-top: 2px; }
-    .family-name  { font-size: 15px; font-weight: 800; color: var(--text); }
-    .family-meta  { display: flex; flex-direction: column; gap: 3px; margin-top: 5px; }
-    .family-meta-row { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text-sub); }
-    .family-meta-label { color: var(--text-light); min-width: 52px; }
+    .family-emoji { font-size: 28px; width: 44px; text-align: center; flex-shrink: 0; padding-top: 2px; }
+    .family-name  { font-size: 21px; font-weight: 800; color: var(--text); }
+    .family-meta  { display: flex; flex-direction: column; gap: 9px; margin-top: 10px; }
+    .family-meta-row { display: flex; align-items: center; gap: 6px; font-size: 17px; color: var(--text); flex-wrap: nowrap; line-height: 1.5; }
+    .family-meta-label { color: var(--text-sub); font-weight: 700; white-space: nowrap; }
     .badge {
-      font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px;
+      font-size: 15px; font-weight: 700; padding: 5px 12px; border-radius: 20px;
       display: inline-flex; align-items: center; gap: 4px;
     }
     .badge-warn  { background: var(--accent-light); color: var(--accent); }
@@ -188,15 +190,15 @@
     .rec-card {
       background: var(--surface); border-radius: var(--r);
       border: 1px solid var(--border); box-shadow: var(--shadow);
-      padding: 14px 16px; margin-bottom: 10px;
+      padding: 16px; margin-bottom: 12px;
     }
-    .rec-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-    .rec-card-date   { font-size: 13px; font-weight: 700; color: var(--primary); }
-    .rec-card-person { font-size: 12px; color: var(--text-sub); margin-top: 2px; }
-    .rec-card-row    { display: flex; align-items: baseline; gap: 6px; margin-bottom: 4px; font-size: 13px; }
-    .rec-card-lbl    { color: var(--text-light); font-size: 11px; min-width: 72px; flex-shrink: 0; }
-    .rec-card-val    { color: var(--text); font-weight: 600; line-height: 1.5; }
-    .rec-card-memo   { font-size: 13px; color: var(--text-sub); line-height: 1.6; margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border); }
+    .rec-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+    .rec-card-date   { font-size: 18px; font-weight: 700; color: var(--primary-dark); }
+    .rec-card-person { font-size: 17px; color: var(--text-sub); margin-top: 3px; }
+    .rec-card-row    { display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px; font-size: 17px; }
+    .rec-card-lbl    { color: var(--text-sub); font-size: 16px; min-width: 72px; flex-shrink: 0; font-weight: 700; }
+    .rec-card-val    { color: var(--text); font-weight: 600; line-height: 1.6; }
+    .rec-card-memo   { font-size: 17px; color: var(--text); line-height: 1.75; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
 
     /* ── Tabs ── */
     .tab-bar {
@@ -204,8 +206,8 @@
       margin-bottom: 14px; flex-shrink: 0;
     }
     .tab-btn {
-      flex: 1; padding: 10px 6px; border: none; background: none;
-      font-size: 13px; font-weight: 600; color: var(--text-sub);
+      flex: 1; padding: 12px 6px; border: none; background: none;
+      font-size: 17px; font-weight: 700; color: var(--text-sub);
       cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px;
       font-family: inherit; transition: all .2s;
     }
@@ -216,48 +218,48 @@
       background: var(--surface);
       border-left: 3px solid var(--primary);
       border-radius: 0 var(--r-sm) var(--r-sm) 0;
-      padding: 12px 14px; margin-bottom: 10px;
+      padding: 14px 16px; margin-bottom: 10px;
       box-shadow: var(--shadow);
     }
-    .memo-block-date  { font-size: 11px; color: var(--text-sub); margin-bottom: 4px; }
-    .memo-block-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
-    .memo-block-body  { font-size: 13px; color: var(--text-sub); line-height: 1.6; }
+    .memo-block-date  { font-size: 16px; color: var(--text-sub); margin-bottom: 5px; font-weight: 600; }
+    .memo-block-title { font-size: 19px; font-weight: 700; color: var(--text); margin-bottom: 5px; }
+    .memo-block-body  { font-size: 17px; color: var(--text); line-height: 1.7; }
 
     /* ── Alert ── */
-    .alert { padding: 12px 14px; border-radius: var(--r-sm); margin-bottom: 12px; display: flex; gap: 10px; align-items: flex-start; }
+    .alert { padding: 14px 16px; border-radius: var(--r-sm); margin-bottom: 12px; display: flex; gap: 10px; align-items: flex-start; }
     .alert-info    { background: var(--primary-bg); }
     .alert-warn    { background: var(--accent-light); }
     .alert-success { background: var(--green-light); }
 
     /* ── Section title ── */
-    .section-title { font-size: 11px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; letter-spacing: .5px; margin: 14px 0 8px; }
+    .section-title { font-size: 16px; font-weight: 700; color: var(--text-sub); letter-spacing: .5px; margin: 16px 0 8px; }
 
     /* ── Step number ── */
-    .step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--primary); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+    .step-num { width: 30px; height: 30px; border-radius: 50%; background: var(--primary); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; flex-shrink: 0; }
 
     /* ── Contact ── */
     .contact-item {
-      display: flex; align-items: center; gap: 12px;
-      padding: 12px 14px; background: var(--surface); border-radius: var(--r-sm);
-      margin-bottom: 8px; border: 1px solid var(--border);
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 16px; background: var(--surface); border-radius: var(--r-sm);
+      margin-bottom: 10px; border: 1px solid var(--border);
     }
-    .contact-icon { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-    .contact-name { font-size: 14px; font-weight: 700; color: var(--text); }
-    .contact-tel  { font-size: 13px; color: var(--primary); margin-top: 2px; }
+    .contact-icon { width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+    .contact-name { font-size: 19px; font-weight: 700; color: var(--text); }
+    .contact-tel  { font-size: 17px; color: var(--primary-dark); margin-top: 3px; }
 
     /* ── Report ── */
-    .report-h3 { font-size: 13px; font-weight: 700; color: var(--primary-dark); margin-bottom: 8px; padding-bottom: 5px; border-bottom: 2px solid var(--primary-bg); }
-    .report-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .report-h3 { font-size: 16px; font-weight: 700; color: var(--primary-dark); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 2px solid var(--primary-bg); }
+    .report-row { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 16px; }
     .report-row:last-child { border-bottom: none; }
 
     /* ── Segment ── */
     .segment { display: flex; background: var(--bg); border-radius: 10px; padding: 3px; margin-bottom: 14px; }
-    .seg-btn { flex: 1; padding: 8px; border: none; background: none; font-size: 13px; color: var(--text-sub); cursor: pointer; border-radius: 8px; font-family: inherit; font-weight: 500; transition: all .2s; }
+    .seg-btn { flex: 1; padding: 10px 6px; border: none; background: none; font-size: 17px; color: var(--text-sub); cursor: pointer; border-radius: 8px; font-family: inherit; font-weight: 600; transition: all .2s; min-height: 48px; }
     .seg-btn.active { background: var(--surface); color: var(--primary); font-weight: 700; box-shadow: var(--shadow); }
 
     /* ── Empty state ── */
-    .empty { text-align: center; padding: 36px 20px; color: var(--text-sub); }
-    .empty-icon { font-size: 44px; margin-bottom: 12px; }
+    .empty { text-align: center; padding: 40px 20px; color: var(--text); font-size: 19px; line-height: 1.7; }
+    .empty-icon { font-size: 48px; margin-bottom: 14px; }
 
     /* ── Animations ── */
     @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
@@ -265,7 +267,7 @@
     @keyframes fadeInOut { 0%{opacity:0;transform:scale(.9)} 15%{opacity:1;transform:scale(1)} 75%{opacity:1} 100%{opacity:0} }
 
     /* ── Divider ── */
-    .divider { height: 1px; background: var(--border); margin: 12px 0; }
+    .divider { height: 1px; background: var(--border); margin: 14px 0; }
 
     /* ── Print / PDF ── */
     #print-area { display: none; }
@@ -283,19 +285,14 @@
       #print-area p  { margin: 2px 0; }
       #print-area table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
       #print-area td { padding: 5px 8px; border-bottom: 1px solid #DDE8ED; font-size: 12px; }
-      #print-area td:first-child { color: #6B7F8E; width: 36%; }
+      #print-area td:first-child { color: #3D5166; width: 36%; }
       #print-area .p-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #DDE8ED; }
       #print-area .p-warn { font-weight: 700; color: #E8924A; }
-      #print-area .p-sub  { font-size: 11px; color: #6B7F8E; }
+      #print-area .p-sub  { font-size: 11px; color: #3D5166; }
       #print-area .p-note { margin-top: 16px; padding: 10px 12px; background: #EAF5F8; border-radius: 6px; font-size: 11px; color: #2E6E82; }
       #print-area .p-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-      #print-area .p-appname { font-size: 11px; color: #6B7F8E; }
-      /* 相談先一覧：リスト全体を1ブロックとして扱い途中改ページ禁止。
-         収まらない場合のみリスト直前で改ページ。個別アイテムには指定しない。 */
-      #print-area .p-consult-list {
-        break-inside: avoid;
-        page-break-inside: avoid;
-      }
+      #print-area .p-appname { font-size: 11px; color: #3D5166; }
+      #print-area .p-consult-list { break-inside: avoid; page-break-inside: avoid; }
     }
 
     /* ── Trend chart ── */
@@ -303,11 +300,11 @@
     .trend-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; height: 100%; justify-content: flex-end; }
     .trend-bar { width: 100%; background: var(--primary); border-radius: 4px 4px 0 0; min-height: 4px; transition: height .4s ease; }
     .trend-bar.warn { background: var(--accent); }
-    .trend-bar-num { font-size: 11px; font-weight: 700; color: var(--text); }
-    .trend-bar-mo  { font-size: 10px; color: var(--text-sub); white-space: nowrap; }
+    .trend-bar-num { font-size: 15px; font-weight: 700; color: var(--text); }
+    .trend-bar-mo  { font-size: 14px; color: var(--text-sub); white-space: nowrap; font-weight: 600; }
     .trend-badge {
       display: inline-flex; align-items: center; gap: 5px;
-      padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 700;
+      padding: 7px 14px; border-radius: 20px; font-size: 17px; font-weight: 700;
     }
   </style>
 </head>
@@ -458,6 +455,8 @@ const getNextCheckDate = person => {
 };
 
 /* 今月チェック済みかどうか */
+const san = name => /[さちく]ん$|さん$/.test(name) ? name : name + 'さん';
+
 const checkedThisMonth = person => {
   const today = new Date();
   const thisYM = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}`;
@@ -522,34 +521,18 @@ const getPersonStats = (person, records, checkHistory) => {
    HOME SCREEN
 ═══════════════════════════════════════════════════ */
 function HomeScreen({ persons, records, checkHistory, onNav, onRecordAdd }) {
-  const today = new Date().toLocaleDateString('ja-JP', { month:'long', day:'numeric', weekday:'short' });
-  const recentCount = records.filter(r => (Date.now() - new Date(r.date)) / 86400000 <= 7).length;
-  const duePersons  = persons.filter(p => isCheckDue(p));
+  const hasUnchecked = persons.some(p => !checkedThisMonth(p));
 
   return (
     <div className="page anim">
       {/* ─ Header ─ */}
-      <div style={{ padding:'48px 20px 16px', background:'linear-gradient(140deg,#4A90A4 0%,#3A7D95 100%)', flexShrink:0 }}>
-        <div style={{ fontSize:12, color:'rgba(255,255,255,.75)', fontWeight:600, letterSpacing:.8 }}>{today}</div>
-        <div style={{ fontSize:22, fontWeight:800, color:'#fff', marginTop:3 }}>くらしあと</div>
-        <div style={{ fontSize:13, color:'rgba(255,255,255,.85)', marginTop:2 }}>暮らしの小さな変化を記録し、相談につなげるアプリ</div>
-        {recentCount > 0 && (
-          <div style={{ marginTop:10, background:'rgba(255,255,255,.18)', borderRadius:10, padding:'8px 12px', fontSize:13, color:'#fff', display:'flex', alignItems:'center', gap:6 }}>
-            <span>📝</span> 今週 {recentCount}件の記録があります
-          </div>
-        )}
-        {duePersons.length > 0 && (
-          <div style={{ marginTop:8, background:'rgba(255,243,205,.92)', borderRadius:10, padding:'10px 12px', display:'flex', alignItems:'flex-start', gap:8 }}>
-            <span style={{ fontSize:16, flexShrink:0 }}>🔔</span>
-            <div style={{ flex:1 }}>
-              <div style={{ fontSize:13, fontWeight:700, color:'#9A6700' }}>生活変化チェックの時期です</div>
-              <div style={{ fontSize:12, color:'#9A6700', marginTop:2 }}>
-                {duePersons.map(p => {
-                  const t = p.notifyTime ? ` (通知: ${p.notifyTime})` : '';
-                  return p.name + t;
-                }).join('、')}さんの最近の様子を確認してみましょう
-              </div>
-            </div>
+      <div style={{ padding:'52px 20px 20px', background:'linear-gradient(160deg,#FDF0E6 0%,#FAE8D5 60%,#F5DFC8 100%)', flexShrink:0, borderBottom:'1px solid #EDD8C4' }}>
+        <div style={{ fontSize:36, fontWeight:900, color:'#7A4520', textAlign:'center', letterSpacing:2 }}>くらしあと</div>
+        <div style={{ fontSize:19, color:'#5A3018', marginTop:8, textAlign:'center', lineHeight:1.65, fontWeight:600 }}>暮らしの小さな変化を記録し、<br/>相談につなげるアプリ</div>
+        {hasUnchecked && (
+          <div style={{ marginTop:16, background:'#FFF8E8', border:'1.5px solid #F5C97A', borderRadius:12, padding:'13px 16px', display:'flex', alignItems:'center', gap:10 }}>
+            <span style={{ fontSize:22, flexShrink:0 }}>🔔</span>
+            <div style={{ fontSize:18, fontWeight:700, color:'#7A5200' }}>今月の生活変化チェックを行いましょう</div>
           </div>
         )}
       </div>
@@ -577,7 +560,7 @@ function HomeScreen({ persons, records, checkHistory, onNav, onRecordAdd }) {
               <button className="action-btn" style={{ background: checkBg, color:'#fff' }} onClick={() => onNav('check')}>
                 <div className="action-btn-icon" style={{ background:'rgba(255,255,255,.22)' }}>{checkIcon}</div>
                 <div>
-                  <div className="action-btn-label">今月の生活変化チェック</div>
+                  <div className="action-btn-label">生活変化チェックを始める</div>
                   <div className="action-btn-sub">{subLine}</div>
                 </div>
               </button>
@@ -593,12 +576,12 @@ function HomeScreen({ persons, records, checkHistory, onNav, onRecordAdd }) {
         </div>
 
         {/* ─ Family list (compact) ─ */}
-        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginTop:4, marginBottom:8 }}>
-          <div className="card-title" style={{ marginBottom:0 }}>
-            <Ic n="person" s={14} c="var(--text-sub)" /> 家族一覧
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginTop:4, marginBottom:10 }}>
+          <div className="card-title" style={{ marginBottom:0, fontSize:19 }}>
+            <Ic n="person" s={16} c="var(--text)" /> 家族一覧
           </div>
-          <button onClick={() => onNav('settings')} style={{ background:'none', border:'none', cursor:'pointer', color:'var(--primary)', fontSize:13, fontWeight:700, display:'flex', alignItems:'center', gap:3 }}>
-            <Ic n="plus" s={14} c="var(--primary)" />追加
+          <button onClick={() => onNav('settings')} style={{ background:'none', border:'none', cursor:'pointer', color:'var(--primary)', fontSize:18, fontWeight:700, display:'flex', alignItems:'center', gap:4 }}>
+            <Ic n="plus" s={18} c="var(--primary)" />追加
           </button>
         </div>
         {persons.map(p => {
@@ -607,12 +590,12 @@ function HomeScreen({ persons, records, checkHistory, onNav, onRecordAdd }) {
           const statusLabel = due ? 'チェック時期' : st.statusLabel;
           const statusClass = due ? 'badge-due'   : st.statusClass;
           return (
-            <div key={p.id} className="family-row" onClick={() => onNav('family_' + p.id)}>
+            <div key={p.id} className="family-row" onClick={() => onNav('records_' + p.id)}>
               <div className="family-emoji">{p.emoji}</div>
               <div style={{ flex:1 }}>
                 <div className="family-name">
                   {p.name}
-                  <span style={{ fontSize:13, fontWeight:400, color:'var(--text-sub)', marginLeft:4 }}>（{p.relation}）</span>
+                  <span style={{ fontSize:18, fontWeight:500, color:'var(--text-sub)', marginLeft:6 }}>（{p.relation}）</span>
                 </div>
                 <div className="family-meta">
                   <div className="family-meta-row">
@@ -622,12 +605,12 @@ function HomeScreen({ persons, records, checkHistory, onNav, onRecordAdd }) {
                   <div className="family-meta-row">
                     <span className="family-meta-label">記録</span>
                     <span>{st.recordCount}件</span>
-                    <span style={{ marginLeft:10 }} className="family-meta-label">変化チェック</span>
+                    <span style={{ marginLeft:8 }} className="family-meta-label">変化チェック</span>
                     <span>{st.checkCount}回</span>
                   </div>
                   <div className="family-meta-row" style={{ marginTop:2 }}>
                     <span className="family-meta-label">状態</span>
-                    <span className={`badge ${statusClass}`} style={{ fontSize:12 }}>
+                    <span className={`badge ${statusClass}`} style={{ fontSize:14 }}>
                       {statusWithIcon(statusLabel)}
                     </span>
                   </div>
@@ -638,11 +621,13 @@ function HomeScreen({ persons, records, checkHistory, onNav, onRecordAdd }) {
           );
         })}
 
-        {/* ─ App description ─ */}
-        <div className="alert alert-info" style={{ marginTop:12, borderRadius:12 }}>
-          <Ic n="info" s={16} c="var(--primary)" />
-          <p style={{ fontSize:12, color:'var(--primary-dark)', lineHeight:1.65 }}>
-            このアプリは、家族の生活変化や気になった出来事を記録し、医師・ケアマネジャー・地域包括支援センターなどへ相談するときに役立てるための記録アプリです。
+        {/* ─ 困ったときの案内 ─ */}
+        <div style={{ marginTop:14, borderRadius:12, padding:'14px 16px', background:'#FDF3EC', border:'1.5px solid #EDD8C4', display:'flex', gap:12, alignItems:'flex-start' }}>
+          <span style={{ fontSize:22, flexShrink:0 }}>💡</span>
+          <p style={{ fontSize:17, color:'#5A3018', lineHeight:1.8 }}>
+            <strong>困ったときは</strong><br />
+            設定 → はじめに・使い方<br />
+            から、いつでも使い方を確認できます。
           </p>
         </div>
       </div>
@@ -661,7 +646,7 @@ function TrendView({ person, checkHistory }) {
   if (myChecks.length === 0) return (
     <div className="empty">
       <div className="empty-icon">📊</div>
-      <p style={{ fontSize:14, lineHeight:1.7 }}>
+      <p style={{ fontSize:17, lineHeight:1.7 }}>
         生活変化チェックを実施すると<br/>ここに変化の推移が表示されます。
       </p>
     </div>
@@ -700,7 +685,7 @@ function TrendView({ person, checkHistory }) {
       {/* ─ 傾向バッジ ─ */}
       {trend && (
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 }}>
-          <span style={{ fontSize:13, color:'var(--text-sub)' }}>直近の傾向</span>
+          <span style={{ fontSize:15, color:'var(--text-sub)' }}>直近の傾向</span>
           <span className="trend-badge" style={{ background:trend.bg, color:trend.color }}>
             {trend.icon} {trend.label}
           </span>
@@ -738,28 +723,28 @@ function TrendView({ person, checkHistory }) {
           return (
             <div key={m} style={{ padding:'12px 0', borderBottom: i < months.length-1 ? '1px solid var(--border)' : 'none' }}>
               <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:6 }}>
-                <span style={{ fontSize:14, fontWeight:700, color:'var(--text)' }}>{fmtMoFull(m)}</span>
-                <span style={{ fontSize:13, fontWeight:700, color:'var(--text-sub)' }}>
+                <span style={{ fontSize:17, fontWeight:700, color:'var(--text)' }}>{fmtMoFull(m)}</span>
+                <span style={{ fontSize:15, fontWeight:700, color:'var(--text-sub)' }}>
                   {cnt}項目
                 </span>
               </div>
               {impression && (
-                <div style={{ fontSize:13, fontWeight:700, color: impColor, marginBottom:6 }}>
+                <div style={{ fontSize:16, fontWeight:700, color: impColor, marginBottom:6 }}>
                   全体的な印象：{impression}
                 </div>
               )}
               {items.length > 0 && (
-                <div style={{ display:'flex', flexWrap:'wrap', gap:5, marginBottom: note ? 8 : 0 }}>
+                <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom: note ? 8 : 0 }}>
                   {items.map(t => (
-                    <span key={t} style={{ fontSize:11, background:'var(--primary-bg)', color:'var(--primary)', padding:'3px 8px', borderRadius:12, fontWeight:500 }}>
+                    <span key={t} style={{ fontSize:14, background:'var(--primary-bg)', color:'var(--primary)', padding:'4px 10px', borderRadius:12, fontWeight:500 }}>
                       {t}
                     </span>
                   ))}
                 </div>
               )}
               {note && (
-                <div style={{ fontSize:12, color:'var(--text-sub)', lineHeight:1.7,
-                  background:'var(--bg)', borderRadius:8, padding:'8px 10px',
+                <div style={{ fontSize:15, color:'var(--text-sub)', lineHeight:1.7,
+                  background:'var(--bg)', borderRadius:8, padding:'10px 12px',
                   whiteSpace:'pre-wrap', wordBreak:'break-all' }}>
                   {note}
                 </div>
@@ -781,7 +766,7 @@ function TrendView({ person, checkHistory }) {
 const CONSULT_TYPES = [
   { value:'doctor',   label:'かかりつけ医',         icon:'🏥' },
   { value:'hospital', label:'医療機関名',           icon:'🏨' },
-  { value:'careman',  label:'担当ケアマネジャー',   icon:'👩‍⚕️' },
+  { value:'careman',  label:'担当ケアマネージャー（介護支援専門員）',   icon:'👩‍⚕️' },
   { value:'chiiki',   label:'地域包括支援センター', icon:'🏢' },
   { value:'houmon',   label:'訪問介護事業所',       icon:'🚗' },
   { value:'shisetsu', label:'施設名',               icon:'🏠' },
@@ -817,7 +802,7 @@ function ConsultTab({ person, onUpdatePerson }) {
   return (
     <>
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
-        <div style={{ fontSize:13, color:'var(--text-sub)' }}>{person.name}さんの相談先・連絡先</div>
+        <div style={{ fontSize:16, color:'var(--text-sub)' }}>{san(person.name)}の相談先・連絡先</div>
         {editId === null && (
           <button className="btn btn-primary btn-sm" onClick={openNew}>
             <Ic n="plus" s={14} c="#fff" />相談先を追加
@@ -871,8 +856,8 @@ function ConsultTab({ person, onUpdatePerson }) {
       {consultees.length === 0 && editId === null && (
         <div className="empty" style={{ padding:'32px 0' }}>
           <div className="empty-icon">🏥</div>
-          <p style={{ fontSize:14, color:'var(--text-sub)', lineHeight:1.7 }}>
-            かかりつけ医やケアマネジャー、<br/>地域包括支援センターなどを<br/>登録しておくと便利です。<br/><br/>「相談先を追加」から登録してください。
+          <p style={{ fontSize:17, color:'var(--text-sub)', lineHeight:1.7 }}>
+            かかりつけ医やケアマネージャー（介護支援専門員）、<br/>地域包括支援センターなどを<br/>登録しておくと便利です。<br/><br/>「相談先を追加」から登録してください。
           </p>
         </div>
       )}
@@ -882,23 +867,23 @@ function ConsultTab({ person, onUpdatePerson }) {
         <div key={c.id} className="card" style={{ marginBottom:10, padding:'14px 14px 12px' }}>
           <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:8 }}>
             <div style={{ display:'flex', alignItems:'flex-start', gap:10, flex:1, minWidth:0 }}>
-              <span style={{ fontSize:24, flexShrink:0, marginTop:1 }}>{getIcon(c.type)}</span>
+              <span style={{ fontSize:26, flexShrink:0, marginTop:1 }}>{getIcon(c.type)}</span>
               <div style={{ flex:1, minWidth:0 }}>
-                <div style={{ fontSize:11, color:'var(--primary)', fontWeight:700, marginBottom:3, letterSpacing:'.02em' }}>
+                <div style={{ fontSize:13, color:'var(--primary)', fontWeight:700, marginBottom:4, letterSpacing:'.02em' }}>
                   {getLabel(c.type)}
                 </div>
-                <div style={{ fontSize:15, fontWeight:700, color:'var(--text)', wordBreak:'break-all' }}>
+                <div style={{ fontSize:17, fontWeight:700, color:'var(--text)', wordBreak:'break-all' }}>
                   {c.name}
                 </div>
                 {c.contact && (
-                  <div style={{ fontSize:13, color:'var(--primary)', marginTop:5 }}>
+                  <div style={{ fontSize:16, color:'var(--primary)', marginTop:6 }}>
                     📞 {c.contact}
                   </div>
                 )}
                 {c.memo && (
-                  <div style={{ fontSize:12, color:'var(--text-sub)', marginTop:7, lineHeight:1.7,
+                  <div style={{ fontSize:15, color:'var(--text-sub)', marginTop:8, lineHeight:1.7,
                     whiteSpace:'pre-wrap', wordBreak:'break-all',
-                    background:'var(--bg)', borderRadius:8, padding:'8px 10px' }}>
+                    background:'var(--bg)', borderRadius:8, padding:'10px 12px' }}>
                     {c.memo}
                   </div>
                 )}
@@ -906,8 +891,8 @@ function ConsultTab({ person, onUpdatePerson }) {
             </div>
             <div style={{ display:'flex', gap:2, flexShrink:0 }}>
               <button onClick={() => openEdit(c)}
-                style={{ background:'none', border:'none', cursor:'pointer', padding:'4px 8px',
-                  color:'var(--primary)', fontSize:12, fontWeight:600 }}>編集</button>
+                style={{ background:'none', border:'none', cursor:'pointer', padding:'6px 10px',
+                  color:'var(--primary)', fontSize:15, fontWeight:600 }}>編集</button>
               <button onClick={() => del(c.id)}
                 style={{ background:'none', border:'none', cursor:'pointer', padding:'4px 6px' }}>
                 <Ic n="trash" s={15} c="var(--text-light)" />
@@ -946,15 +931,15 @@ function FamilyScreen({ person, records, checkHistory, onBack, onAddRecord, onEd
               <h1>{person.name}（{person.relation}）</h1>
               <p>記録 {myRecords.length}件 · チェック {checkHistory.filter(c => c.personId === person.id).length}回</p>
               {due ? (
-                <p style={{ color:'#B86000', fontWeight:700, fontSize:12, marginTop:2 }}>
+                <p style={{ color:'#B86000', fontWeight:700, fontSize:15, marginTop:3 }}>
                   🔔 今月の生活変化チェックの時期です
                 </p>
               ) : checkedThisMonth(person) ? (
-                <p style={{ color:'var(--green)', fontSize:12, marginTop:2, fontWeight:600 }}>
+                <p style={{ color:'var(--green)', fontSize:15, marginTop:3, fontWeight:600 }}>
                   ✅ 今月のチェック済み・次回: {nextCheckStr}
                 </p>
               ) : (
-                <p style={{ color:'var(--text-sub)', fontSize:12, marginTop:2 }}>
+                <p style={{ color:'var(--text-sub)', fontSize:15, marginTop:3 }}>
                   {lastCheckYM
                     ? `前回: ${fmtTargetMonth(lastCheckYM)}・次回チェック予定: ${nextCheckStr}`
                     : 'まだ生活変化チェックをしていません'}
@@ -982,10 +967,10 @@ function FamilyScreen({ person, records, checkHistory, onBack, onAddRecord, onEd
                 background:'#FFFBEA', border:'1.5px solid #F5C842',
                 borderRadius:12, padding:'11px 14px', marginBottom:10,
               }}>
-                <span style={{ fontSize:18, flexShrink:0, marginTop:1 }}>⚠️</span>
+                <span style={{ fontSize:22, flexShrink:0, marginTop:1 }}>⚠️</span>
                 <div>
-                  <div style={{ fontSize:14, fontWeight:800, color:'#5A3A00' }}>生活変化チェックの時期です</div>
-                  <div style={{ fontSize:12, color:'#7A5A20', marginTop:2 }}>最近の様子を確認してみましょう</div>
+                  <div style={{ fontSize:17, fontWeight:800, color:'#5A3A00' }}>生活変化チェックの時期です</div>
+                  <div style={{ fontSize:15, color:'#7A5A20', marginTop:3 }}>最近の様子を確認してみましょう</div>
                 </div>
               </div>
             )}
@@ -997,7 +982,7 @@ function FamilyScreen({ person, records, checkHistory, onBack, onAddRecord, onEd
                 marginBottom:10, padding:'15px', borderRadius:12,
                 border:'none', cursor:'pointer', fontFamily:'inherit',
                 background:'#F5C842', color:'#5A3A00',
-                fontSize:16, fontWeight:800,
+                fontSize:18, fontWeight:800,
                 boxShadow:'0 3px 10px rgba(245,200,66,.45)',
               }}>
                 🔔 生活変化チェックをする
@@ -1014,7 +999,7 @@ function FamilyScreen({ person, records, checkHistory, onBack, onAddRecord, onEd
                 marginBottom:14, padding:'13px', borderRadius:12,
                 border:'1.5px solid var(--primary)', cursor:'pointer', fontFamily:'inherit',
                 background:'var(--surface)', color:'var(--primary)',
-                fontSize:15, fontWeight:700,
+                fontSize:17, fontWeight:700,
               }}>
                 🔍 生活変化チェックをする
               </button>
@@ -1034,7 +1019,7 @@ function FamilyScreen({ person, records, checkHistory, onBack, onAddRecord, onEd
                       {!isCheck && (
                         <button onClick={() => onEditRecord && onEditRecord(r)}
                           style={{ background:'none', border:'none', cursor:'pointer',
-                            padding:'2px 6px', fontSize:13, color:'var(--primary)', fontWeight:600 }}>
+                            padding:'4px 8px', fontSize:15, color:'var(--primary)', fontWeight:600 }}>
                           ✏️
                         </button>
                       )}
@@ -1045,7 +1030,7 @@ function FamilyScreen({ person, records, checkHistory, onBack, onAddRecord, onEd
                     </div>
                   </div>
                   {scLabel && (
-                    <div style={{ fontSize:12, color:'var(--primary)', fontWeight:600, margin:'3px 0' }}>
+                    <div style={{ fontSize:15, color:'var(--primary)', fontWeight:600, margin:'4px 0' }}>
                       {scLabel}
                     </div>
                   )}
@@ -1119,7 +1104,7 @@ function CheckScreen({ persons, initialPerson, onBack, onSave }) {
       <div className="page-body">
         <div className="alert alert-info" style={{ marginBottom:14 }}>
           <Ic n="info" s={15} c="var(--primary)" />
-          <span style={{ fontSize:13, color:'var(--primary-dark)', lineHeight:1.6 }}>
+          <span style={{ fontSize:16, color:'var(--primary-dark)', lineHeight:1.65 }}>
             この1か月を振り返って、家族の様子や変化を記録します。月に1回実施しましょう。
           </span>
         </div>
@@ -1153,9 +1138,9 @@ function CheckScreen({ persons, initialPerson, onBack, onSave }) {
             <button onClick={() => setStep(0)} style={{ background:'none', border:'none', cursor:'pointer' }}>
               <Ic n="left" s={24} c="var(--primary)" />
             </button>
-            <div><h1>生活変化チェック</h1><p>{person.name}さん · ステップ1/2</p></div>
+            <div><h1>生活変化チェック</h1><p>{san(person.name)} · ステップ1/2</p></div>
           </div>
-          <span style={{ fontSize:13, color:'var(--text-sub)', fontWeight:600 }}>
+          <span style={{ fontSize:16, color:'var(--text-sub)', fontWeight:600 }}>
             {checked.length}項目
           </span>
         </div>
@@ -1164,16 +1149,16 @@ function CheckScreen({ persons, initialPerson, onBack, onSave }) {
       <div className="page-body">
         {/* 説明 + 対象期間 */}
         <div style={{ background:'var(--primary-bg)', borderRadius:12, padding:'14px 14px', marginBottom:14 }}>
-          <div style={{ fontSize:14, fontWeight:700, color:'var(--primary-dark)', marginBottom:6 }}>
+          <div style={{ fontSize:17, fontWeight:700, color:'var(--primary-dark)', marginBottom:8 }}>
             この1か月を振り返って、以前と比べて気になった変化を選んでください。
           </div>
-          <div style={{ fontSize:12, color:'var(--text-sub)', display:'flex', alignItems:'center', gap:6 }}>
+          <div style={{ fontSize:15, color:'var(--text-sub)', display:'flex', alignItems:'center', gap:6 }}>
             <span>📅</span>
             <span>対象期間：{fmtTargetPeriod(targetYM)}</span>
           </div>
         </div>
 
-        <div style={{ fontSize:13, color:'var(--text-sub)', marginBottom:12 }}>
+        <div style={{ fontSize:16, color:'var(--text-sub)', marginBottom:14 }}>
           以前と比べて変化があった項目にチェックを入れてください。（複数選択可）
         </div>
 
@@ -1182,7 +1167,7 @@ function CheckScreen({ persons, initialPerson, onBack, onSave }) {
             <div className="checkbox">
               {ans[q.id] && <svg viewBox="0 0 12 10" width="12" height="10"><polyline points="1,5 4.5,8.5 11,1" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>}
             </div>
-            <label style={{ fontSize:14, color:'var(--text)', cursor:'pointer', lineHeight:1.5 }}>{q.text}</label>
+            <label style={{ fontSize:17, color:'var(--text)', cursor:'pointer', lineHeight:1.55 }}>{q.text}</label>
           </div>
         ))}
 
@@ -1203,14 +1188,14 @@ function CheckScreen({ persons, initialPerson, onBack, onSave }) {
           <button onClick={() => setStep(1)} style={{ background:'none', border:'none', cursor:'pointer' }}>
             <Ic n="left" s={24} c="var(--primary)" />
           </button>
-          <div><h1>生活変化チェック</h1><p>{person.name}さん · ステップ2/2</p></div>
+          <div><h1>生活変化チェック</h1><p>{san(person.name)} · ステップ2/2</p></div>
         </div>
         <div className="progress-bar"><div className="progress-fill" style={{ width:'85%' }} /></div>
       </div>
       <div className="page-body">
         {/* 全体的な印象 */}
         <div className="form-group">
-          <label className="form-label" style={{ fontSize:15, fontWeight:700, color:'var(--text)', marginBottom:10 }}>
+          <label className="form-label" style={{ marginBottom:12 }}>
             この1か月の全体的な印象
           </label>
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
@@ -1223,7 +1208,7 @@ function CheckScreen({ persons, initialPerson, onBack, onSave }) {
                     border: `2px solid ${active ? c : 'var(--border)'}`,
                     background: active ? (imp === '良くなった' ? 'var(--green-light)' : imp === '変わらない' ? 'var(--primary-bg)' : imp === '少し気になる' ? 'var(--accent-light)' : '#FEF0EB') : 'var(--surface)',
                     color: active ? c : 'var(--text-sub)',
-                    fontWeight: active ? 700 : 500, fontSize:14,
+                    fontWeight: active ? 700 : 500, fontSize:16,
                     cursor:'pointer', fontFamily:'inherit', lineHeight:1.4, textAlign:'center' }}>
                   {imp === '良くなった' ? '😊' : imp === '変わらない' ? '😐' : imp === '少し気になる' ? '😟' : '😨'}<br/>
                   {imp}
@@ -1235,9 +1220,9 @@ function CheckScreen({ persons, initialPerson, onBack, onSave }) {
 
         {/* 自由記述 */}
         <div className="form-group">
-          <label className="form-label" style={{ fontSize:15, fontWeight:700, color:'var(--text)' }}>
+          <label className="form-label">
             この1か月を振り返って感じたこと・様子の変化
-            <span style={{ fontWeight:400, fontSize:12, color:'var(--text-light)', marginLeft:6 }}>（任意）</span>
+            <span style={{ fontWeight:400, fontSize:15, color:'var(--text-light)', marginLeft:6 }}>（任意）</span>
           </label>
           <textarea
             className="form-input" rows={5}
@@ -1272,10 +1257,10 @@ function CheckScreen({ persons, initialPerson, onBack, onSave }) {
 
         {/* 対象者・期間 */}
         <div style={{ background:'var(--bg)', borderRadius:12, padding:'12px 14px', marginBottom:14 }}>
-          <div style={{ fontSize:13, color:'var(--text-sub)', marginBottom:4 }}>
-            {person.emoji} {person.name}さん
+          <div style={{ fontSize:16, color:'var(--text-sub)', marginBottom:6 }}>
+            {person.emoji} {san(person.name)}
           </div>
-          <div style={{ fontSize:12, color:'var(--text-sub)' }}>
+          <div style={{ fontSize:15, color:'var(--text-sub)' }}>
             対象期間：{fmtTargetPeriod(targetYM)}
           </div>
         </div>
@@ -1283,9 +1268,9 @@ function CheckScreen({ persons, initialPerson, onBack, onSave }) {
         {/* 結果バッジ */}
         <div style={{ background:res.bg, border:`2px solid ${res.color}30`, borderRadius:14, padding:'16px', textAlign:'center', marginBottom:14 }}>
           <div style={{ fontSize:32, marginBottom:6 }}>{res.icon}</div>
-          <div style={{ fontSize:16, fontWeight:800, color:res.color }}>{res.label}</div>
+          <div style={{ fontSize:18, fontWeight:800, color:res.color }}>{res.label}</div>
           {checked.length > 0 && (
-            <div style={{ fontSize:13, color:'var(--text-sub)', marginTop:6 }}>
+            <div style={{ fontSize:16, color:'var(--text-sub)', marginTop:8 }}>
               {checked.length}項目の変化が記録されました
             </div>
           )}
@@ -1296,7 +1281,7 @@ function CheckScreen({ persons, initialPerson, onBack, onSave }) {
           <div className="card" style={{ marginBottom:12 }}>
             <div className="card-title">選択した項目</div>
             {checked.map(q => (
-              <div key={q.id} style={{ padding:'6px 0', borderBottom:'1px solid var(--border)', fontSize:14, color:'var(--text)' }}>
+              <div key={q.id} style={{ padding:'8px 0', borderBottom:'1px solid var(--border)', fontSize:17, color:'var(--text)' }}>
                 ☑ {q.text}
               </div>
             ))}
@@ -1307,7 +1292,7 @@ function CheckScreen({ persons, initialPerson, onBack, onSave }) {
         {impression && (
           <div className="card" style={{ marginBottom:12 }}>
             <div className="card-title">全体的な印象</div>
-            <div style={{ fontSize:15, fontWeight:700, color: IMPRESSION_COLOR[impression] || 'var(--text)' }}>
+            <div style={{ fontSize:17, fontWeight:700, color: IMPRESSION_COLOR[impression] || 'var(--text)' }}>
               {impression}
             </div>
           </div>
@@ -1317,7 +1302,7 @@ function CheckScreen({ persons, initialPerson, onBack, onSave }) {
         {note && (
           <div className="card" style={{ marginBottom:12 }}>
             <div className="card-title">この1か月を振り返って感じたこと</div>
-            <div style={{ fontSize:13, color:'var(--text-sub)', lineHeight:1.7, whiteSpace:'pre-wrap' }}>{note}</div>
+            <div style={{ fontSize:16, color:'var(--text)', lineHeight:1.7, whiteSpace:'pre-wrap' }}>{note}</div>
           </div>
         )}
 
@@ -1332,7 +1317,7 @@ function CheckScreen({ persons, initialPerson, onBack, onSave }) {
             ].filter((_,i) => i < Math.min(checked.length, 3)).map((s,i) => (
               <div key={i} style={{ display:'flex', alignItems:'center', gap:12, padding:'8px 0', borderBottom:'1px solid var(--border)' }}>
                 <span className="step-num">{i+1}</span>
-                <span style={{ fontSize:14, color:'var(--text)', fontWeight:500 }}>{s.icon} {s.text}</span>
+                <span style={{ fontSize:17, color:'var(--text)', fontWeight:500 }}>{s.icon} {s.text}</span>
               </div>
             ))}
           </div>
@@ -1682,7 +1667,7 @@ function RecordForm({ persons, initialPersonId, onBack, onSave, initial = null }
 
         {/* ─ 気になったこと ─ */}
         <div className="form-group">
-          <label className="form-label">気になったこと <span style={{ fontSize:11, color:'var(--text-sub)', fontWeight:400 }}>（複数選択可）</span></label>
+          <label className="form-label">気になったこと <span style={{ fontSize:14, color:'var(--text-sub)', fontWeight:400 }}>（複数選択可）</span></label>
           <div className="chip-group">
             {CATS.map(c => <button key={c} className={`chip ${cats.includes(c)?'on':''}`} onClick={() => toggleCat(c)}>{c}</button>)}
           </div>
@@ -1699,7 +1684,7 @@ function RecordForm({ persons, initialPersonId, onBack, onSave, initial = null }
               <option value="">選択してください</option>
               {SCENES.map(s => <option key={s.id} value={s.id}>{s.icon} {s.label}</option>)}
             </select>
-            <span style={{ position:'absolute', right:14, top:'50%', transform:'translateY(-50%)', fontSize:12, color:'var(--text-sub)', pointerEvents:'none' }}>▼</span>
+            <span style={{ position:'absolute', right:14, top:'50%', transform:'translateY(-50%)', fontSize:15, color:'var(--text-sub)', pointerEvents:'none' }}>▼</span>
           </div>
 
           {sceneId === 'other' && (
@@ -1726,11 +1711,11 @@ function RecordForm({ persons, initialPersonId, onBack, onSave, initial = null }
             }
             return (
               <div style={{ marginTop:10, background:'var(--primary-bg)', borderRadius:10, padding:'10px 14px' }}>
-                <div style={{ fontSize:12, fontWeight:700, color:'var(--primary-dark)', marginBottom:6 }}>
+                <div style={{ fontSize:14, fontWeight:700, color:'var(--primary-dark)', marginBottom:8 }}>
                   {hintLabel}（タップで詳細メモに追加）
                 </div>
                 {hints.length === 0 ? (
-                  <div style={{ fontSize:13, color:'var(--text-sub)', padding:'4px 0' }}>
+                  <div style={{ fontSize:16, color:'var(--text)', padding:'4px 0' }}>
                     入力例はありません。詳細メモに自由に入力してください。
                   </div>
                 ) : (
@@ -1740,11 +1725,11 @@ function RecordForm({ persons, initialPersonId, onBack, onSave, initial = null }
                       style={{
                         display:'flex', alignItems:'center', gap:8, width:'100%',
                         background:'none', border:'none', cursor:'pointer',
-                        padding:'6px 0', textAlign:'left', fontFamily:'inherit',
+                        padding:'8px 0', textAlign:'left', fontFamily:'inherit',
                         borderBottom:'1px solid rgba(74,144,164,.12)',
                       }}>
-                      <span style={{ fontSize:16, color:'var(--primary)', flexShrink:0, fontWeight:700 }}>＋</span>
-                      <span style={{ fontSize:13, color:'var(--text-sub)', lineHeight:1.5 }}>{h}</span>
+                      <span style={{ fontSize:18, color:'var(--primary)', flexShrink:0, fontWeight:700 }}>＋</span>
+                      <span style={{ fontSize:15, color:'var(--text)', lineHeight:1.55 }}>{h}</span>
                     </button>
                   ))
                 )}
@@ -1759,7 +1744,7 @@ function RecordForm({ persons, initialPersonId, onBack, onSave, initial = null }
             <label className="form-label" style={{ marginBottom:0 }}>詳細メモ</label>
             {hintToast && (
               <span style={{
-                fontSize:12, fontWeight:700, color:'var(--green)',
+                fontSize:15, fontWeight:700, color:'var(--green)',
                 background:'var(--green-light)', padding:'3px 10px', borderRadius:20,
                 animation:'fadeInOut 1.8s ease forwards',
               }}>
@@ -1774,11 +1759,11 @@ function RecordForm({ persons, initialPersonId, onBack, onSave, initial = null }
 
         {/* ─ 写真 ─ */}
         <div className="form-group">
-          <label className="form-label">写真 <span style={{ fontSize:11, color:'var(--text-sub)', fontWeight:400 }}>（任意）</span></label>
+          <label className="form-label">写真 <span style={{ fontSize:14, color:'var(--text-sub)', fontWeight:400 }}>（任意）</span></label>
           <div style={{ width:72, height:72, background:'var(--bg)', borderRadius:10, display:'flex', alignItems:'center', justifyContent:'center', border:'2px dashed var(--border)', cursor:'pointer' }}>
             <Ic n="camera" s={24} c="var(--text-light)" />
           </div>
-          <div style={{ fontSize:11, color:'var(--text-sub)', marginTop:5 }}>※ β版では写真保存はデモ表示のみです</div>
+          <div style={{ fontSize:14, color:'var(--text-sub)', marginTop:6 }}>※ β版では写真保存はデモ表示のみです</div>
         </div>
       </div>
     </div>
@@ -1786,11 +1771,19 @@ function RecordForm({ persons, initialPersonId, onBack, onSave, initial = null }
 }
 
 /* ═══════════════════════════════════════════════════
-   記録一覧（月別・日付別グループ表示）
+   記録一覧（月別・日付別グループ表示）+ 変化の推移
 ═══════════════════════════════════════════════════ */
-function RecordsScreen({ persons, records, onAddRecord, onDeleteRecord, onEditRecord }) {
-  const [filterPerson, setFilterPerson] = useState('all');
+function RecordsScreen({ persons, records, checkHistory, onAddRecord, onDeleteRecord, onEditRecord, initialPersonId }) {
+  const [tab, setTab] = useState('list'); /* 'list' | 'trend' */
+  const [filterPerson, setFilterPerson] = useState(
+    initialPersonId != null ? String(initialPersonId) : 'all'
+  );
   const [seg, setSeg] = useState('all');
+
+  /* initialPersonId が変わったら同期 */
+  React.useEffect(() => {
+    if (initialPersonId != null) setFilterPerson(String(initialPersonId));
+  }, [initialPersonId]);
 
   const sorted   = [...records].sort((a,b) => (b.date+b.time).localeCompare(a.date+a.time));
   const filtered = sorted.filter(r => {
@@ -1803,8 +1796,8 @@ function RecordsScreen({ persons, records, onAddRecord, onDeleteRecord, onEditRe
   /* 月別グループ → 日付別グループ に変換 */
   const monthGroups = [];
   filtered.forEach(r => {
-    const mo = r.date.slice(0, 7);            /* 2025-06 */
-    const dy = r.date;                         /* 2025-06-10 */
+    const mo = r.date.slice(0, 7);
+    const dy = r.date;
     let mg = monthGroups.find(g => g.month === mo);
     if (!mg) { mg = { month: mo, days: [] }; monthGroups.push(mg); }
     let dg = mg.days.find(d => d.date === dy);
@@ -1817,152 +1810,190 @@ function RecordsScreen({ persons, records, onAddRecord, onDeleteRecord, onEditRe
     return `${y}年${Number(m)}月`;
   };
 
+  /* 変化の推移タブ用：選択中の家族オブジェクト */
+  const trendPerson = filterPerson !== 'all'
+    ? persons.find(p => p.id === Number(filterPerson))
+    : null;
+
   return (
     <div className="page anim">
       <div className="page-header">
+        {/* タイトル行 */}
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
-          <div><h1>記録一覧</h1><p>家族の変化を時系列で確認</p></div>
-          <button className="btn btn-green btn-sm" onClick={() => onAddRecord(null)} style={{ gap:4 }}>
-            <Ic n="plus" s={14} c="#fff" />追加
-          </button>
+          <div><h1>記録</h1><p>記録一覧・変化の推移</p></div>
+          {tab === 'list' && (
+            <button className="btn btn-green btn-sm" onClick={() => onAddRecord(filterPerson !== 'all' ? Number(filterPerson) : null)} style={{ gap:4 }}>
+              <Ic n="plus" s={14} c="#fff" />追加
+            </button>
+          )}
         </div>
-        <select className="form-input" style={{ marginBottom:10, fontSize:13, padding:'8px 12px' }}
-          value={filterPerson} onChange={e => setFilterPerson(e.target.value)}>
+
+        {/* 家族セレクター */}
+        <select className="form-input" style={{ marginBottom:10 }}
+          value={filterPerson} onChange={e => { setFilterPerson(e.target.value); }}>
           <option value="all">すべての家族</option>
           {persons.map(p => <option key={p.id} value={p.id}>{p.emoji} {p.name}</option>)}
         </select>
-        <div className="segment" style={{ marginBottom:0 }}>
-          <button className={`seg-btn ${seg==='all'  ?'active':''}`} onClick={() => setSeg('all')}>すべて</button>
-          <button className={`seg-btn ${seg==='memo' ?'active':''}`} onClick={() => setSeg('memo')}>気づき記録</button>
-          <button className={`seg-btn ${seg==='check'?'active':''}`} onClick={() => setSeg('check')}>チェック結果</button>
+
+        {/* 記録一覧 | 変化の推移 タブ */}
+        <div className="tab-bar" style={{ marginBottom:0 }}>
+          <button className={`tab-btn ${tab==='list'?'active':''}`} onClick={() => setTab('list')}>📝 記録一覧</button>
+          <button className={`tab-btn ${tab==='trend'?'active':''}`} onClick={() => setTab('trend')}>📊 変化の推移</button>
         </div>
       </div>
 
       <div className="page-body">
-        {filtered.length === 0 && (
-          <div className="empty">
-            <div className="empty-icon">📭</div>
-            <p>記録がありません。<br/>「+追加」から記録を始めましょう。</p>
-          </div>
+
+        {/* ══ 変化の推移タブ ══ */}
+        {tab === 'trend' && (
+          trendPerson
+            ? <TrendView person={trendPerson} checkHistory={checkHistory} />
+            : (
+              <div className="empty">
+                <div className="empty-icon">📊</div>
+                <p style={{ fontSize:17, lineHeight:1.7 }}>
+                  上の家族セレクターから<br/>表示したい家族を選んでください。
+                </p>
+              </div>
+            )
         )}
 
-        {monthGroups.map(mg => (
-          <div key={mg.month}>
-            {/* ── 月見出し ── */}
-            <div style={{
-              fontSize:15, fontWeight:800, color:'var(--primary-dark)',
-              padding:'6px 0 8px',
-              borderBottom:'2px solid var(--primary)',
-              marginBottom:12,
-              display:'flex', alignItems:'center', justifyContent:'space-between',
-            }}>
-              <span>{fmtMonthHead(mg.month)}</span>
-              <span style={{ fontSize:12, fontWeight:400, color:'var(--text-sub)' }}>
-                {mg.days.reduce((s,d) => s + d.items.length, 0)}件
-              </span>
+        {/* ══ 記録一覧タブ ══ */}
+        {tab === 'list' && (
+          <>
+            {/* 種別フィルター */}
+            <div className="segment" style={{ marginBottom:14 }}>
+              <button className={`seg-btn ${seg==='all'  ?'active':''}`} onClick={() => setSeg('all')}>すべて</button>
+              <button className={`seg-btn ${seg==='memo' ?'active':''}`} onClick={() => setSeg('memo')}>気づき記録</button>
+              <button className={`seg-btn ${seg==='check'?'active':''}`} onClick={() => setSeg('check')}>チェック結果</button>
             </div>
 
-            {/* ── 日付グループ ── */}
-            {mg.days.map(dg => {
-              const [,mo,dy] = dg.date.split('-');
-              const dayLabel = `${Number(mo)}/${Number(dy)}`;
-              return (
-                <div key={dg.date} style={{ marginBottom:16 }}>
-                  {/* 日付バー */}
-                  <div style={{
-                    fontSize:13, fontWeight:700, color:'var(--text-sub)',
-                    background:'var(--bg)', borderRadius:6,
-                    padding:'4px 10px', marginBottom:8, display:'inline-block',
-                  }}>
-                    {dayLabel}
-                  </div>
+            {filtered.length === 0 && (
+              <div className="empty">
+                <div className="empty-icon">📭</div>
+                <p>記録がありません。<br/>「+追加」から記録を始めましょう。</p>
+              </div>
+            )}
 
-                  {/* その日のカード */}
-                  {dg.items.map(r => {
-                    const p     = persons.find(x => x.id === r.personId);
-                    const scene = SCENES.find(s => s.id === r.sceneId);
-                    const sceneLabel = scene ? `${scene.icon} ${scene.label}` : (r.place || null);
-                    const isCheck = !!r.fromCheck;
-                    return (
-                      <div key={r.id} style={{
-                        background:'var(--surface)', borderRadius:12,
-                        border:'1px solid var(--border)',
-                        padding:'12px 14px', marginBottom:8,
-                        borderLeft: `4px solid ${isCheck ? 'var(--accent)' : 'var(--green)'}`,
-                      }}>
-                        {/* カードヘッダー */}
-                        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:6 }}>
-                          <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-                            <span style={{ fontSize:15 }}>{isCheck ? '🔔' : '✏️'}</span>
-                            <span style={{
-                              fontSize:12, fontWeight:700,
-                              color: isCheck ? 'var(--accent)' : 'var(--green)',
-                            }}>
-                              {isCheck ? '生活変化チェック' : '気づき記録'}
-                            </span>
-                            {r.time && (
-                              <span style={{ fontSize:11, color:'var(--text-light)' }}>{r.time}</span>
-                            )}
-                          </div>
-                          <div style={{ display:'flex', alignItems:'center', gap:4 }}>
-                            {p && (
-                              <span style={{ fontSize:12, color:'var(--text-sub)' }}>
-                                {p.emoji} {p.name}
-                              </span>
-                            )}
-                            {!isCheck && (
-                              <button onClick={() => onEditRecord(r)}
-                                style={{ background:'none', border:'none', cursor:'pointer',
-                                  padding:'2px 6px', fontSize:13, color:'var(--primary)', fontWeight:600 }}>
-                                ✏️
-                              </button>
-                            )}
-                            <button onClick={() => onDeleteRecord(r.id)}
-                              style={{ background:'none', border:'none', cursor:'pointer', padding:'2px 4px' }}>
-                              <Ic n="trash" s={14} c="var(--text-light)" />
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* 場面 */}
-                        {sceneLabel && (
-                          <div style={{ fontSize:12, color:'var(--primary)', marginBottom:4 }}>
-                            {sceneLabel}
-                          </div>
-                        )}
-
-                        {/* カテゴリ（箇条書き） */}
-                        {r.cats?.length > 0 && (
-                          <div style={{ marginBottom: r.memo ? 6 : 0 }}>
-                            {r.cats.map(c => (
-                              <div key={c} style={{ fontSize:13, color:'var(--text)', lineHeight:1.7 }}>
-                                ・{CAT_EMOJI[c] || '●'} {c}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* メモ */}
-                        {r.memo && (
-                          <div style={{
-                            fontSize:13, color:'var(--text-sub)', lineHeight:1.65,
-                            marginTop: r.cats?.length ? 4 : 0,
-                            paddingTop: r.cats?.length ? 6 : 0,
-                            borderTop: r.cats?.length ? '1px solid var(--border)' : 'none',
-                          }}>
-                            {r.memo}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+            {monthGroups.map(mg => (
+              <div key={mg.month}>
+                {/* ── 月見出し ── */}
+                <div style={{
+                  fontSize:17, fontWeight:800, color:'var(--primary-dark)',
+                  padding:'6px 0 8px',
+                  borderBottom:'2px solid var(--primary)',
+                  marginBottom:12,
+                  display:'flex', alignItems:'center', justifyContent:'space-between',
+                }}>
+                  <span>{fmtMonthHead(mg.month)}</span>
+                  <span style={{ fontSize:15, fontWeight:400, color:'var(--text-sub)' }}>
+                    {mg.days.reduce((s,d) => s + d.items.length, 0)}件
+                  </span>
                 </div>
-              );
-            })}
 
-            <div style={{ height:8 }} />
-          </div>
-        ))}
+                {/* ── 日付グループ ── */}
+                {mg.days.map(dg => {
+                  const [,mo,dy] = dg.date.split('-');
+                  const dayLabel = `${Number(mo)}/${Number(dy)}`;
+                  return (
+                    <div key={dg.date} style={{ marginBottom:16 }}>
+                      {/* 日付バー */}
+                      <div style={{
+                        fontSize:15, fontWeight:700, color:'var(--text-sub)',
+                        background:'var(--bg)', borderRadius:6,
+                        padding:'5px 12px', marginBottom:8, display:'inline-block',
+                      }}>
+                        {dayLabel}
+                      </div>
+
+                      {/* その日のカード */}
+                      {dg.items.map(r => {
+                        const p     = persons.find(x => x.id === r.personId);
+                        const scene = SCENES.find(s => s.id === r.sceneId);
+                        const sceneLabel = scene ? `${scene.icon} ${scene.label}` : (r.place || null);
+                        const isCheck = !!r.fromCheck;
+                        return (
+                          <div key={r.id} style={{
+                            background:'var(--surface)', borderRadius:12,
+                            border:'1px solid var(--border)',
+                            padding:'12px 14px', marginBottom:8,
+                            borderLeft: `4px solid ${isCheck ? 'var(--accent)' : 'var(--green)'}`,
+                          }}>
+                            {/* カードヘッダー */}
+                            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:6 }}>
+                              <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+                                <span style={{ fontSize:18 }}>{isCheck ? '🔔' : '✏️'}</span>
+                                <span style={{
+                                  fontSize:14, fontWeight:700,
+                                  color: isCheck ? 'var(--accent)' : 'var(--green)',
+                                }}>
+                                  {isCheck ? '生活変化チェック' : '気づき記録'}
+                                </span>
+                                {r.time && (
+                                  <span style={{ fontSize:14, color:'var(--text-light)' }}>{r.time}</span>
+                                )}
+                              </div>
+                              <div style={{ display:'flex', alignItems:'center', gap:4 }}>
+                                {p && filterPerson === 'all' && (
+                                  <span style={{ fontSize:15, color:'var(--text-sub)' }}>
+                                    {p.emoji} {p.name}
+                                  </span>
+                                )}
+                                {!isCheck && (
+                                  <button onClick={() => onEditRecord(r)}
+                                    style={{ background:'none', border:'none', cursor:'pointer',
+                                      padding:'4px 8px', fontSize:15, color:'var(--primary)', fontWeight:600 }}>
+                                    ✏️
+                                  </button>
+                                )}
+                                <button onClick={() => onDeleteRecord(r.id)}
+                                  style={{ background:'none', border:'none', cursor:'pointer', padding:'2px 4px' }}>
+                                  <Ic n="trash" s={14} c="var(--text-light)" />
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* 場面 */}
+                            {sceneLabel && (
+                              <div style={{ fontSize:15, color:'var(--primary)', marginBottom:5 }}>
+                                {sceneLabel}
+                              </div>
+                            )}
+
+                            {/* カテゴリ（箇条書き） */}
+                            {r.cats?.length > 0 && (
+                              <div style={{ marginBottom: r.memo ? 6 : 0 }}>
+                                {r.cats.map(c => (
+                                  <div key={c} style={{ fontSize:16, color:'var(--text)', lineHeight:1.7 }}>
+                                    ・{CAT_EMOJI[c] || '●'} {c}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {/* メモ */}
+                            {r.memo && (
+                              <div style={{
+                                fontSize:16, color:'var(--text)', lineHeight:1.65,
+                                marginTop: r.cats?.length ? 4 : 0,
+                                paddingTop: r.cats?.length ? 6 : 0,
+                                borderTop: r.cats?.length ? '1px solid var(--border)' : 'none',
+                              }}>
+                                {r.memo}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                })}
+
+                <div style={{ height:8 }} />
+              </div>
+            ))}
+          </>
+        )}
       </div>
     </div>
   );
@@ -2001,13 +2032,13 @@ function ReportScreen({ persons, records, checkHistory }) {
     <div className="page anim">
       <div className="page-header">
         <h1>相談メモ</h1>
-        <p>医師・ケアマネ・地域包括支援センターへ</p>
+        <p>医師・ケアマネージャー（介護支援専門員）・地域包括支援センターへ</p>
       </div>
       <div className="page-body">
         {/* 目的説明（常時表示） */}
         <div className="alert alert-info" style={{ marginBottom:14, borderRadius:12 }}>
           <Ic n="info" s={15} c="var(--primary)" />
-          <p style={{ fontSize:13, color:'var(--primary-dark)', lineHeight:1.65 }}>
+          <p style={{ fontSize:16, color:'var(--primary-dark)', lineHeight:1.65 }}>
             この相談メモは、特定の家族について医療・介護・福祉の専門職へ相談する際に利用するための資料です。
           </p>
         </div>
@@ -2021,7 +2052,7 @@ function ReportScreen({ persons, records, checkHistory }) {
                 <select className="form-input" value={pid} onChange={e => { setPid(e.target.value); }}>
                   {persons.map(p => <option key={p.id} value={p.id}>{p.emoji} {p.name}（{p.relation}）</option>)}
                 </select>
-                <div style={{ fontSize:12, color:'var(--text-sub)', marginTop:6 }}>
+                <div style={{ fontSize:15, color:'var(--text-sub)', marginTop:8 }}>
                   複数の家族の記録をまとめて確認したい場合は「記録カレンダー」をご利用ください。
                 </div>
               </div>
@@ -2030,9 +2061,9 @@ function ReportScreen({ persons, records, checkHistory }) {
                 <input type="date" className="form-input" value={from} onChange={e => setFrom(e.target.value)} />
                 <input type="date" className="form-input" value={to}   onChange={e => setTo(e.target.value)} />
               </div>
-              <div style={{ marginTop:14, padding:'10px 12px', background:'var(--bg)', borderRadius:10 }}>
-                <div style={{ fontSize:13, color:'var(--text-sub)' }}>
-                  {person?.emoji} {person?.name}さんの記録:&nbsp;
+              <div style={{ marginTop:14, padding:'12px 14px', background:'var(--bg)', borderRadius:10 }}>
+                <div style={{ fontSize:16, color:'var(--text-sub)' }}>
+                  {person?.emoji} {person ? san(person.name) : ''}の記録:&nbsp;
                   <b style={{ color:'var(--primary)' }}>{filtered.length}件</b>
                 </div>
               </div>
@@ -2045,9 +2076,9 @@ function ReportScreen({ persons, records, checkHistory }) {
           <>
             <div className="card" style={{ border:'2px solid var(--primary)' }}>
               <div style={{ textAlign:'center', paddingBottom:14, marginBottom:14, borderBottom:'2px solid var(--primary-bg)' }}>
-                <div style={{ fontSize:11, color:'var(--text-sub)', letterSpacing:.8 }}>くらしあと</div>
-                <div style={{ fontSize:18, fontWeight:800, color:'var(--text)', marginTop:4 }}>生活変化・相談メモ</div>
-                <div style={{ fontSize:12, color:'var(--text-sub)', marginTop:4 }}>{from} 〜 {to}</div>
+                <div style={{ fontSize:13, color:'var(--text-sub)', letterSpacing:.8 }}>くらしあと</div>
+                <div style={{ fontSize:20, fontWeight:800, color:'var(--text)', marginTop:4 }}>生活変化・相談メモ</div>
+                <div style={{ fontSize:15, color:'var(--text-sub)', marginTop:4 }}>{from} 〜 {to}</div>
               </div>
 
               <div style={{ marginBottom:16 }}>
@@ -2076,7 +2107,7 @@ function ReportScreen({ persons, records, checkHistory }) {
                         <span style={{ fontWeight:700, color: cnt>=3 ? 'var(--accent)' : 'var(--text)' }}>{cnt}件</span>
                       </div>
                     ))
-                  : <div style={{ fontSize:13, color:'var(--text-sub)', padding:'4px 0' }}>この期間の気づき記録はありません</div>
+                  : <div style={{ fontSize:15, color:'var(--text)', padding:'4px 0' }}>この期間の気づき記録はありません</div>
                 }
               </div>
 
@@ -2085,7 +2116,7 @@ function ReportScreen({ persons, records, checkHistory }) {
                 <div className="report-h3">【生活変化チェック】 月ごとの振り返り</div>
                 {(() => {
                   if (myChecks.length === 0) return (
-                    <div style={{ fontSize:13, color:'var(--text-sub)', padding:'4px 0' }}>この期間のチェック記録はありません</div>
+                    <div style={{ fontSize:15, color:'var(--text)', padding:'4px 0' }}>この期間のチェック記録はありません</div>
                   );
                   /* 月別にまとめる */
                   const moMap = {};
@@ -2100,7 +2131,7 @@ function ReportScreen({ persons, records, checkHistory }) {
                     const items = [...moMap[m].ids].map(id => CHECK_QS.find(q => q.id === id)?.text).filter(Boolean);
                     return (
                       <div key={m} style={{ marginBottom:14, paddingBottom:14, borderBottom:'1px solid var(--border)' }}>
-                        <div style={{ fontSize:14, fontWeight:700, color:'var(--primary-dark)', marginBottom:6 }}>
+                        <div style={{ fontSize:17, fontWeight:700, color:'var(--primary-dark)', marginBottom:8 }}>
                           【{fmtTargetMonth(m)}の生活変化チェック】
                         </div>
                         {moMap[m].impression && (
@@ -2111,20 +2142,20 @@ function ReportScreen({ persons, records, checkHistory }) {
                         )}
                         {items.length > 0 && (
                           <div style={{ marginBottom: moMap[m].note ? 6 : 0 }}>
-                            <div style={{ fontSize:12, color:'var(--text-sub)', marginBottom:4 }}>選択した項目</div>
+                            <div style={{ fontSize:15, color:'var(--text-sub)', marginBottom:6 }}>選択した項目</div>
                             {items.map(t => (
-                              <div key={t} style={{ fontSize:13, padding:'2px 0 2px 10px' }}>・{t}</div>
+                              <div key={t} style={{ fontSize:16, padding:'3px 0 3px 10px' }}>・{t}</div>
                             ))}
                           </div>
                         )}
                         {moMap[m].note && (
                           <div style={{ marginTop:6 }}>
-                            <div style={{ fontSize:12, color:'var(--text-sub)', marginBottom:4 }}>この1か月を振り返って感じたこと</div>
-                            <div style={{ fontSize:13, lineHeight:1.7, whiteSpace:'pre-wrap', color:'var(--text-sub)' }}>{moMap[m].note}</div>
+                            <div style={{ fontSize:15, color:'var(--text-sub)', marginBottom:5 }}>この1か月を振り返って感じたこと</div>
+                            <div style={{ fontSize:16, lineHeight:1.7, whiteSpace:'pre-wrap', color:'var(--text)' }}>{moMap[m].note}</div>
                           </div>
                         )}
                         {items.length === 0 && !moMap[m].note && (
-                          <div style={{ fontSize:13, color:'var(--text-sub)', paddingLeft:10 }}>特に気になる変化はありませんでした</div>
+                          <div style={{ fontSize:16, color:'var(--text)', paddingLeft:10 }}>特に気になる変化はありませんでした</div>
                         )}
                       </div>
                     );
@@ -2144,7 +2175,7 @@ function ReportScreen({ persons, records, checkHistory }) {
                       <div key={m} className="report-row">
                         <span>{fmtMoFull(m)}&emsp;{cnt}項目</span>
                         {diff !== null && diff !== 0 && (
-                          <span style={{ fontWeight:700, color: diff > 0 ? 'var(--accent)' : 'var(--green)', fontSize:12 }}>
+                          <span style={{ fontWeight:700, color: diff > 0 ? 'var(--accent)' : 'var(--green)', fontSize:15 }}>
                             {diff > 0 ? `▲${diff}` : `▼${Math.abs(diff)}`}
                           </span>
                         )}
@@ -2158,16 +2189,16 @@ function ReportScreen({ persons, records, checkHistory }) {
                 <div className="report-h3">記録一覧</div>
                 {filtered.slice(0,8).map(r => (
                   <div key={r.id} style={{ padding:'8px 0', borderBottom:'1px solid var(--border)' }}>
-                    <div style={{ fontSize:11, color:'var(--text-sub)' }}>{r.date} {r.time}</div>
-                    <div style={{ fontSize:13, fontWeight:600, color:'var(--text)', marginTop:2 }}>{r.cats?.join('・')||'メモ'}</div>
-                    {r.memo && <div style={{ fontSize:12, color:'var(--text-sub)', marginTop:2 }}>{r.memo}</div>}
+                    <div style={{ fontSize:14, color:'var(--text-sub)' }}>{r.date} {r.time}</div>
+                    <div style={{ fontSize:16, fontWeight:600, color:'var(--text)', marginTop:3 }}>{r.cats?.join('・')||'メモ'}</div>
+                    {r.memo && <div style={{ fontSize:15, color:'var(--text)', marginTop:3 }}>{r.memo}</div>}
                   </div>
                 ))}
-                {filtered.length === 0 && <div style={{ fontSize:13, color:'var(--text-sub)' }}>この期間の記録はありません</div>}
+                {filtered.length === 0 && <div style={{ fontSize:16, color:'var(--text)' }}>この期間の記録はありません</div>}
               </div>
 
-              <div style={{ marginTop:14, padding:'10px 12px', background:'var(--primary-bg)', borderRadius:10, fontSize:12, color:'var(--primary-dark)', lineHeight:1.65 }}>
-                📌 このメモは、くらしあとで記録した内容をもとに作成されています。医師・ケアマネジャーに見せて、専門家のアドバイスを受けてください。
+              <div style={{ marginTop:14, padding:'12px 14px', background:'var(--primary-bg)', borderRadius:10, fontSize:15, color:'var(--primary-dark)', lineHeight:1.65 }}>
+                📌 このメモは、くらしあとで記録した内容をもとに作成されています。医師・ケアマネージャー（介護支援専門員）に見せて、専門家のアドバイスを受けてください。
               </div>
             </div>
             <div style={{ display:'flex', gap:10, marginTop:4 }}>
@@ -2188,9 +2219,9 @@ function ReportScreen({ persons, records, checkHistory }) {
                     .map(r => {
                       const dateStr = r.date ? r.date.replace(/-/g,'/') : '';
                       const cats    = r.cats?.join('・') || '';
-                      const memo    = r.memo ? `<div style="color:#6B7F8E;font-size:11px;margin-top:2px">${r.memo}</div>` : '';
+                      const memo    = r.memo ? `<div style="color:#3D5166;font-size:11px;margin-top:2px">${r.memo}</div>` : '';
                       return `<div style="padding:6px 0;border-bottom:1px solid #DDE8ED">
-                        <div style="font-size:11px;color:#6B7F8E">${dateStr}${r.time ? ' ' + r.time : ''}</div>
+                        <div style="font-size:11px;color:#3D5166">${dateStr}${r.time ? ' ' + r.time : ''}</div>
                         <div style="font-size:13px;font-weight:600;margin-top:2px">${cats || 'メモ'}</div>
                         ${memo}
                       </div>`;
@@ -2215,11 +2246,11 @@ function ReportScreen({ persons, records, checkHistory }) {
                     const impRow = checksByMonth[m].impression
                       ? `<div style="font-size:12px;margin:4px 0"><b>家族の印象：</b>${checksByMonth[m].impression}</div>` : '';
                     const noteRow = checksByMonth[m].note
-                      ? `<div style="font-size:12px;color:#6B7F8E;margin-top:4px;white-space:pre-wrap">${checksByMonth[m].note}</div>` : '';
+                      ? `<div style="font-size:12px;color:#3D5166;margin-top:4px;white-space:pre-wrap">${checksByMonth[m].note}</div>` : '';
                     return `<div style="margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #DDE8ED">
                       <div style="font-size:13px;font-weight:700;color:#2E6E82;margin-bottom:4px">【${y}年${Number(mo)}月の生活変化チェック】</div>
                       ${impRow}
-                      ${items ? `<div style="font-size:12px;margin-top:4px">選択した項目</div>${items}` : '<div style="font-size:12px;color:#6B7F8E;padding-left:10px">特に気になる変化はありませんでした</div>'}
+                      ${items ? `<div style="font-size:12px;margin-top:4px">選択した項目</div>${items}` : '<div style="font-size:12px;color:#3D5166;padding-left:10px">特に気になる変化はありませんでした</div>'}
                       ${noteRow}
                     </div>`;
                   }).join('');
@@ -2228,8 +2259,8 @@ function ReportScreen({ persons, records, checkHistory }) {
                   const consultees = person?.consultees || [];
                   const consultRows = consultees.map(c => {
                     const typeLabel = CONSULT_TYPES.find(t => t.value === c.type)?.label || 'その他';
-                    const contact   = c.contact ? `<div style="font-size:11px;color:#6B7F8E;margin-top:2px">📞 ${c.contact}</div>` : '';
-                    const memo      = c.memo    ? `<div style="font-size:11px;color:#6B7F8E;margin-top:3px;white-space:pre-wrap">${c.memo}</div>` : '';
+                    const contact   = c.contact ? `<div style="font-size:11px;color:#3D5166;margin-top:2px">📞 ${c.contact}</div>` : '';
+                    const memo      = c.memo    ? `<div style="font-size:11px;color:#3D5166;margin-top:3px;white-space:pre-wrap">${c.memo}</div>` : '';
                     return `<div style="padding:8px 0;border-bottom:1px solid #DDE8ED">
                       <div style="font-size:11px;color:#4A90A4;font-weight:700">${typeLabel}</div>
                       <div style="font-size:13px;font-weight:700;margin-top:2px">${c.name}</div>
@@ -2251,14 +2282,14 @@ function ReportScreen({ persons, records, checkHistory }) {
                     </table>
 
                     <h2>【気づき記録】 観察した事実</h2>
-                    ${kidzukiList || '<p style="color:#6B7F8E;font-size:12px">この期間の気づき記録はありません</p>'}
+                    ${kidzukiList || '<p style="color:#3D5166;font-size:12px">この期間の気づき記録はありません</p>'}
 
                     <h2>【生活変化チェック】 確認した項目</h2>
-                    ${checkMonthRows || '<p style="color:#6B7F8E;font-size:12px">この期間のチェック記録はありません</p>'}
+                    ${checkMonthRows || '<p style="color:#3D5166;font-size:12px">この期間のチェック記録はありません</p>'}
 
                     ${consultRows ? `<div class="p-consult-list"><h2>相談先一覧</h2>${consultRows}</div>` : ''}
 
-                    <div class="p-note">📌 このメモはくらしあとで記録した内容をもとに作成されています。医師・ケアマネジャーに見せて、専門家のアドバイスを受けてください。</div>
+                    <div class="p-note">📌 このメモはくらしあとで記録した内容をもとに作成されています。医師・ケアマネージャー（介護支援専門員）に見せて、専門家のアドバイスを受けてください。</div>
                   `;
                   window.print();
                   setTimeout(() => { document.getElementById('print-area').innerHTML = ''; }, 1000);
@@ -2302,10 +2333,10 @@ function PersonCard({ person, onUpdate, onDelete }) {
       <div
         onClick={() => setOpen(o => !o)}
         style={{ display:'flex', alignItems:'center', padding:'13px 14px', cursor:'pointer', gap:12 }}>
-        <div style={{ fontSize:26, flexShrink:0 }}>{person.emoji}</div>
+        <div style={{ fontSize:30, flexShrink:0 }}>{person.emoji}</div>
         <div style={{ flex:1 }}>
-          <div style={{ fontWeight:700, fontSize:15, color:'var(--text)' }}>{person.name}（{person.relation}）</div>
-          <div style={{ fontSize:12, color:'var(--text-sub)', marginTop:2 }}>
+          <div style={{ fontWeight:700, fontSize:17, color:'var(--text)' }}>{person.name}（{person.relation}）</div>
+          <div style={{ fontSize:15, color:'var(--text-sub)', marginTop:3 }}>
             毎月{checkDay === '末' ? '末日' : `${checkDay}日`}にチェック
             {due && <span style={{ color:'var(--accent)', fontWeight:700, marginLeft:8 }}>🔔 時期です</span>}
           </div>
@@ -2314,13 +2345,13 @@ function PersonCard({ person, onUpdate, onDelete }) {
           style={{ background:'none', border:'none', cursor:'pointer', padding:'4px 6px', marginRight:4 }}>
           <Ic n="trash" s={16} c="var(--text-light)" />
         </button>
-        <span style={{ fontSize:12, color:'var(--text-light)', transition:'transform .2s', display:'inline-block', transform: open ? 'rotate(90deg)' : 'rotate(0deg)' }}>▶</span>
+        <span style={{ fontSize:16, color:'var(--text-light)', transition:'transform .2s', display:'inline-block', transform: open ? 'rotate(90deg)' : 'rotate(0deg)' }}>▶</span>
       </div>
 
       {open && (
         <div style={{ borderTop:'1px solid var(--border)', padding:'14px 14px 16px' }}>
           {/* ── 基本情報編集 ── */}
-          <div style={{ fontSize:13, fontWeight:700, color:'var(--text-sub)', marginBottom:10, textTransform:'uppercase', letterSpacing:'.04em' }}>基本情報</div>
+          <div style={{ fontSize:14, fontWeight:700, color:'var(--text-sub)', marginBottom:12, textTransform:'uppercase', letterSpacing:'.04em' }}>基本情報</div>
           <div className="form-group">
             <label className="form-label">名前</label>
             <input className="form-input" value={editName} onChange={e => setEditName(e.target.value)} onBlur={saveBasic} />
@@ -2342,19 +2373,19 @@ function PersonCard({ person, onUpdate, onDelete }) {
           </div>
 
           {/* ── チェック設定 ── */}
-          <div style={{ fontSize:13, fontWeight:700, color:'var(--text-sub)', margin:'16px 0 10px', textTransform:'uppercase', letterSpacing:'.04em' }}>チェック設定</div>
+          <div style={{ fontSize:14, fontWeight:700, color:'var(--text-sub)', margin:'18px 0 12px', textTransform:'uppercase', letterSpacing:'.04em' }}>チェック設定</div>
 
           {/* 前回 / 次回 */}
           <div style={{ background:'var(--bg)', borderRadius:10, padding:'10px 12px', marginBottom:12 }}>
             <div style={{ display:'flex', justifyContent:'space-between', padding:'5px 0', borderBottom:'1px solid var(--border)' }}>
-              <span style={{ fontSize:13, color:'var(--text-sub)' }}>前回チェック</span>
-              <span style={{ fontSize:13, fontWeight:700 }}>
+              <span style={{ fontSize:16, color:'var(--text-sub)' }}>前回チェック</span>
+              <span style={{ fontSize:16, fontWeight:700 }}>
                 {person.lastCheckDate ? fmtTargetMonth(person.lastCheckDate.slice(0,7)) : '未実施'}
               </span>
             </div>
             <div style={{ display:'flex', justifyContent:'space-between', padding:'5px 0' }}>
-              <span style={{ fontSize:13, color:'var(--text-sub)' }}>次回チェック予定日</span>
-              <span style={{ fontSize:13, fontWeight:700, color: due ? 'var(--accent)' : 'var(--text)' }}>
+              <span style={{ fontSize:16, color:'var(--text-sub)' }}>次回チェック予定日</span>
+              <span style={{ fontSize:16, fontWeight:700, color: due ? 'var(--accent)' : 'var(--text)' }}>
                 {nextDateStr}{due && ' ⚠'}
               </span>
             </div>
@@ -2371,7 +2402,7 @@ function PersonCard({ person, onUpdate, onDelete }) {
                     border:`2px solid ${active?'var(--primary)':'var(--border)'}`,
                     background: active?'var(--primary-bg)':'var(--surface)',
                     color: active?'var(--primary)':'var(--text-sub)',
-                    fontWeight: active?700:500, fontSize:14,
+                    fontWeight: active?700:500, fontSize:16,
                     cursor:'pointer', fontFamily:'inherit', textAlign:'center' }}>
                   {d === '末' ? '末日' : `${d}日`}
                 </button>
@@ -2386,14 +2417,14 @@ function PersonCard({ person, onUpdate, onDelete }) {
               const active = notify === t;
               return (
                 <button key={t} onClick={() => onUpdate({ ...person, notifyTime: active ? '' : t })}
-                  style={{ padding:'6px 12px', borderRadius:20, border:`1.5px solid ${active?'var(--primary)':'var(--border)'}`, background: active?'var(--primary)':'var(--surface)', color: active?'#fff':'var(--text)', fontSize:13, fontWeight: active?700:400, cursor:'pointer', fontFamily:'inherit' }}>
+                  style={{ padding:'8px 14px', borderRadius:20, border:`1.5px solid ${active?'var(--primary)':'var(--border)'}`, background: active?'var(--primary)':'var(--surface)', color: active?'#fff':'var(--text)', fontSize:15, fontWeight: active?700:400, cursor:'pointer', fontFamily:'inherit', minHeight:42 }}>
                   {t}
                 </button>
               );
             })}
           </div>
           <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-            <span style={{ fontSize:13, color:'var(--text-sub)', flexShrink:0 }}>時刻指定</span>
+            <span style={{ fontSize:16, color:'var(--text-sub)', flexShrink:0 }}>時刻指定</span>
             <input type="time" className="form-input" style={{ flex:1 }} value={notify}
               onChange={e => onUpdate({ ...person, notifyTime: e.target.value })} />
             {notify && (
@@ -2408,139 +2439,418 @@ function PersonCard({ person, onUpdate, onDelete }) {
 }
 
 /* ══════════════════════════════════════════════════════
-   はじめに・使い方ガイドページ
+   共通パーツ：「このアプリでできること」リスト
 ══════════════════════════════════════════════════════ */
+const FEATURES = [
+  { icon:'📝', text:'日々の気づき記録' },
+  { icon:'📅', text:'月1回の生活変化チェック' },
+  { icon:'📞', text:'相談先・連絡先の登録' },
+  { icon:'📄', text:'相談メモの作成' },
+  { icon:'🖨️', text:'PDF保存・印刷' },
+  { icon:'💾', text:'バックアップ・復元' },
+];
+
+/* ══════════════════════════════════════════════════════
+   オンボーディング画面（初回起動時のみ表示）
+══════════════════════════════════════════════════════ */
+function OnboardingScreen({ onStart }) {
+  const [page, setPage] = React.useState(0);
+  const TOTAL = 4;
+
+  const pages = [
+    /* ── ページ1：ようこそ ── */
+    <div key="p1" style={{ display:'flex', flexDirection:'column', alignItems:'center', textAlign:'center', padding:'20px 24px 0', flex:1 }}>
+      <div style={{ fontSize:64, marginBottom:20 }}>🏡</div>
+      <div style={{ fontSize:36, fontWeight:900, color:'var(--primary-dark)', letterSpacing:1, marginBottom:14 }}>くらしあと</div>
+      <div style={{ fontSize:20, color:'var(--text-sub)', fontWeight:600, marginBottom:20, lineHeight:1.6 }}>
+        暮らしの小さな変化を、<br />大切な人へ届ける。
+      </div>
+      <div style={{ fontSize:18, color:'var(--text)', lineHeight:1.9, background:'#fff', borderRadius:16, padding:'20px 22px', boxShadow:'0 2px 10px rgba(74,144,164,.10)', textAlign:'left' }}>
+        家族の毎日の様子を記録し、暮らしの小さな変化に気づき、必要なときに医師やケアマネージャー（介護支援専門員）へ相談できるアプリです。<br /><br />
+        気になった小さな変化も、続けて記録することで大切な情報になります。
+      </div>
+    </div>,
+
+    /* ── ページ2：このアプリでできること ── */
+    <div key="p2" style={{ display:'flex', flexDirection:'column', padding:'10px 24px 0', flex:1 }}>
+      <div style={{ fontSize:26, fontWeight:900, color:'var(--primary-dark)', textAlign:'center', marginBottom:6 }}>このアプリでできること</div>
+      <div style={{ fontSize:16, color:'var(--text-sub)', textAlign:'center', marginBottom:20 }}>3つの主な機能をご紹介します</div>
+      {[
+        { icon:'📝', title:'気づきを記録する', desc:'食事・服薬・転倒・会話など、日々の気になった出来事をすぐに記録できます。' },
+        { icon:'📅', title:'月1回の変化チェック', desc:'生活全体を月に1回振り返り、変化の流れをグラフで確認できます。' },
+        { icon:'📄', title:'相談メモをつくる', desc:'記録をまとめて相談資料を作成。医師やケアマネージャー（介護支援専門員）へ見せるPDFとして保存できます。' },
+      ].map((f, i) => (
+        <div key={i} style={{
+          background:'#fff', borderRadius:14, padding:'18px 18px', marginBottom:12,
+          boxShadow:'0 2px 8px rgba(74,144,164,.10)',
+          display:'flex', gap:16, alignItems:'flex-start',
+          border:'1.5px solid var(--border)',
+        }}>
+          <span style={{ fontSize:30, flexShrink:0, marginTop:2 }}>{f.icon}</span>
+          <div>
+            <div style={{ fontSize:19, fontWeight:800, color:'var(--text)', marginBottom:5 }}>{f.title}</div>
+            <div style={{ fontSize:17, color:'var(--text)', lineHeight:1.75 }}>{f.desc}</div>
+          </div>
+        </div>
+      ))}
+    </div>,
+
+    /* ── ページ3：このアプリの趣旨 ── */
+    <div key="p3" style={{ display:'flex', flexDirection:'column', alignItems:'center', textAlign:'center', padding:'20px 24px 0', flex:1 }}>
+      <div style={{ fontSize:48, marginBottom:18 }}>📌</div>
+      <div style={{ fontSize:26, fontWeight:900, color:'var(--primary-dark)', marginBottom:20 }}>このアプリについて</div>
+      <div style={{ background:'#FFF8E1', border:'2px solid #FFE082', borderRadius:16, padding:'22px 22px', textAlign:'left' }}>
+        <p style={{ fontSize:18, color:'#5D4037', lineHeight:1.9, margin:'0 0 16px' }}>
+          このアプリは、医療・介護・福祉の相談を補助するための<strong>記録アプリ</strong>です。
+        </p>
+        <p style={{ fontSize:18, color:'#5D4037', lineHeight:1.9, margin:'0 0 16px' }}>
+          毎日の小さな変化を記録することで、家族みんなの安心につながります。
+        </p>
+        <p style={{ fontSize:17, color:'#795548', lineHeight:1.85, margin:0 }}>
+          ⚠️ 体調や生活に急な変化がある場合は、アプリだけで判断せず、医療機関・ケアマネージャー（介護支援専門員）・地域包括支援センターへご相談ください。
+        </p>
+      </div>
+    </div>,
+
+    /* ── ページ4：はじめ方 ── */
+    <div key="p4" style={{ display:'flex', flexDirection:'column', padding:'10px 24px 0', flex:1 }}>
+      <div style={{ fontSize:26, fontWeight:900, color:'var(--primary-dark)', textAlign:'center', marginBottom:6 }}>使い始めるには</div>
+      <div style={{ fontSize:16, color:'var(--text-sub)', textAlign:'center', marginBottom:20 }}>かんたん5ステップ</div>
+      {[
+        { n:1, text:'家族を登録する' },
+        { n:2, text:'気づいたことを記録する' },
+        { n:3, text:'月1回、生活変化チェックをする' },
+        { n:4, text:'相談メモをまとめる' },
+        { n:5, text:'専門職へ相談する' },
+      ].map((s, i) => (
+        <React.Fragment key={i}>
+          <div style={{ display:'flex', alignItems:'center', gap:14, background:'#fff', borderRadius:12, padding:'14px 16px', border:'1.5px solid var(--border)', boxShadow:'0 1px 4px rgba(74,144,164,.08)' }}>
+            <span style={{
+              flexShrink:0, width:32, height:32, borderRadius:'50%',
+              background:'var(--primary)', color:'#fff',
+              display:'flex', alignItems:'center', justifyContent:'center',
+              fontSize:17, fontWeight:800,
+            }}>{s.n}</span>
+            <span style={{ fontSize:18, fontWeight:700, color:'var(--text)' }}>{s.text}</span>
+          </div>
+          {i < 4 && <div style={{ textAlign:'center', fontSize:18, color:'var(--text-sub)', padding:'4px 0' }}>↓</div>}
+        </React.Fragment>
+      ))}
+      <div style={{ marginTop:16, padding:'14px 18px', background:'var(--primary-bg)', borderRadius:12, border:'1.5px solid var(--border)', fontSize:16, color:'var(--text)', lineHeight:1.8, textAlign:'center' }}>
+        詳しい使い方は、<br /><strong>「設定」→「はじめに・使い方」</strong><br />から、いつでも確認できます。
+      </div>
+    </div>,
+  ];
+
+  return (
+    <div className="page" style={{ background:'linear-gradient(160deg,#EAF5F8 0%,#F0F8FA 100%)' }}>
+
+      {/* ── ページインジケーター ── */}
+      <div style={{ display:'flex', justifyContent:'center', gap:8, paddingTop:56, paddingBottom:16, flexShrink:0 }}>
+        {Array.from({ length: TOTAL }).map((_, i) => (
+          <div key={i} style={{
+            width: i === page ? 24 : 8, height:8, borderRadius:4,
+            background: i === page ? 'var(--primary)' : 'rgba(74,144,164,.3)',
+            transition:'width .25s',
+          }} />
+        ))}
+      </div>
+
+      {/* ── ページ内容 ── */}
+      <div style={{ flex:1, overflowY:'auto', display:'flex', flexDirection:'column' }}>
+        {pages[page]}
+      </div>
+
+      {/* ── ナビゲーションボタン ── */}
+      <div style={{ flexShrink:0, padding:'16px 24px 40px' }}>
+        {page < TOTAL - 1 ? (
+          <button
+            onClick={() => setPage(p => p + 1)}
+            className="btn btn-primary btn-full"
+            style={{ fontSize:20, padding:'18px 20px', borderRadius:14, boxShadow:'0 4px 18px rgba(74,144,164,.28)', letterSpacing:.5 }}>
+            次へ
+          </button>
+        ) : (
+          <button
+            onClick={onStart}
+            className="btn btn-primary btn-full"
+            style={{ fontSize:20, padding:'18px 20px', borderRadius:14, boxShadow:'0 4px 18px rgba(74,144,164,.28)', letterSpacing:.5, background:'#2E7D97' }}>
+            はじめる
+          </button>
+        )}
+        {page > 0 && (
+          <button
+            onClick={() => setPage(p => p - 1)}
+            style={{ display:'block', margin:'12px auto 0', background:'none', border:'none', cursor:'pointer', fontSize:16, color:'var(--text-sub)', fontFamily:'inherit', padding:'8px 20px' }}>
+            ← 戻る
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════
+   はじめに・使い方ガイドページ（設定から何度でも確認可）
+══════════════════════════════════════════════════════ */
+const GUIDE_FEATURES = [
+  {
+    icon:'📝', title:'日々の気づき記録',
+    desc:'家族の暮らしの中で気になった小さな変化を、その都度記録できます。',
+    steps:[
+      'ホーム画面の「気づき記録を追加」を押す',
+      '記録する家族を選ぶ',
+      '場面や気づいた内容を選ぶ',
+      '必要に応じて自由記述を入力する',
+      '保存する',
+    ],
+  },
+  {
+    icon:'📅', title:'月1回の生活変化チェック',
+    desc:'食事、服薬、金銭管理、会話、外出など、生活全体の変化を月に1回振り返ります。',
+    steps:[
+      'ホーム画面の「生活変化チェックを始める」を押す',
+      '対象の家族を選ぶ',
+      '各項目について最近の様子を回答する',
+      '必要に応じてメモを入力する',
+      '保存する',
+    ],
+  },
+  {
+    icon:'📞', title:'相談先・連絡先の登録',
+    desc:'ケアマネージャー（介護支援専門員）、医療機関、地域包括支援センターなどの相談先を登録できます。',
+    steps:[
+      '設定画面を開く',
+      '家族を選び「相談先・連絡先」の項目を開く',
+      '名称、担当者名、電話番号などを入力する',
+      '保存する',
+    ],
+  },
+  {
+    icon:'📄', title:'相談メモの作成',
+    desc:'これまでに記録した内容を確認しながら、専門職へ相談したいことを整理できます。',
+    steps:[
+      '下部メニューの「相談メモ」を押す',
+      '対象の家族を選ぶ',
+      '相談したい内容を入力する',
+      '必要に応じて記録内容を確認する',
+      '保存する',
+    ],
+  },
+  {
+    icon:'🖨️', title:'PDF保存・印刷',
+    desc:'記録や相談メモをPDFにまとめ、保存や印刷ができます。医師やケアマネージャー（介護支援専門員）などへの相談時に活用できます。',
+    steps:[
+      '相談メモ画面を開く',
+      '対象の家族と期間を選ぶ',
+      '「PDFを作成する」を押す',
+      '保存または印刷する',
+    ],
+  },
+];
+
+const USAGE_STEPS = [
+  {
+    num:'①', title:'家族を登録する',
+    desc:'はじめに、記録する家族を登録します。',
+    steps:['設定画面を開く','「家族を追加する」を押す','名前・続柄・絵文字を入力する','「保存する」を押す'],
+  },
+  {
+    num:'②', title:'気づいたことを記録する',
+    desc:'ホーム画面の「気づき記録を追加」から、気になった出来事を記録します。',
+    steps:['ホーム画面の「気づき記録を追加」を押す','家族を選ぶ','気づいた場面・内容を選ぶ','必要に応じてメモを書く','「保存する」を押す'],
+    note:'例）薬の飲み忘れ・同じ話を繰り返す・転倒しそうになった・外出する回数が減った',
+  },
+  {
+    num:'③', title:'月に1回、生活変化チェックをする',
+    desc:'食事・服薬・会話・外出など、この1か月の様子を振り返ります。',
+    steps:['ホーム画面の「生活変化チェックを始める」を押す','家族を選ぶ','各項目について最近の様子を回答する','全体の印象・気になったことをメモする','「保存する」を押す'],
+  },
+  {
+    num:'④', title:'相談につなげる',
+    desc:'記録した内容をもとに、専門職への相談メモを作成できます。',
+    steps:['下部メニューの「相談メモ」を押す','家族と期間を選ぶ','相談したい内容を確認・入力する','「PDFを作成する」から保存または印刷する'],
+    note:'医師・ケアマネージャー（介護支援専門員）・地域包括支援センターへの相談時に活用できます。',
+  },
+  {
+    num:'⑤', title:'記録を振り返る',
+    desc:'過去の記録をいつでも確認できます。',
+    steps:['下部メニューの「記録」を押す','家族を選ぶ','「記録一覧」または「変化の推移」を選ぶ','鉛筆マークから修正もできます'],
+  },
+];
+
 function GuideScreen({ onBack }) {
-  const stepStyle = { display:'flex', gap:14, alignItems:'flex-start', padding:'14px 0', borderBottom:'1px solid var(--border)' };
-  const stepNumStyle = {
-    flexShrink:0, width:32, height:32, borderRadius:'50%',
-    background:'var(--primary)', color:'#fff',
-    display:'flex', alignItems:'center', justifyContent:'center',
-    fontSize:15, fontWeight:800,
-  };
-  const qaStyle = { padding:'14px 0', borderBottom:'1px solid var(--border)' };
-  const secTitle = { fontSize:17, fontWeight:800, color:'var(--text)', margin:'22px 0 10px', display:'flex', alignItems:'center', gap:8 };
+  const [openIdx, setOpenIdx] = React.useState(null);
+  const [openUsage, setOpenUsage] = React.useState(null);
+  const toggle = i => setOpenIdx(prev => prev === i ? null : i);
+  const toggleUsage = i => setOpenUsage(prev => prev === i ? null : i);
+
+  const secTitle = { fontSize:19, fontWeight:800, color:'var(--text)', margin:'24px 0 12px', display:'flex', alignItems:'center', gap:8 };
+  const qaStyle = { padding:'16px 0', borderBottom:'1px solid var(--border)' };
 
   return (
     <div className="page anim">
-      <div className="page-header" style={{ position:'relative' }}>
-        <button onClick={onBack} style={{
-          position:'absolute', left:0, top:'50%', transform:'translateY(-50%)',
-          background:'none', border:'none', cursor:'pointer', padding:'8px 12px',
-          color:'var(--primary)', fontSize:15, fontWeight:700, fontFamily:'inherit',
-          display:'flex', alignItems:'center', gap:4,
-        }}>
-          <Ic n="left" s={16} c="var(--primary)" />戻る
-        </button>
-        <h1>はじめに・使い方</h1>
-        <p>アプリの概要と基本操作</p>
+      {/* ── ヘッダー：3カラムで重なり防止 ── */}
+      <div className="page-header" style={{ display:'flex', flexDirection:'column', padding:'52px 0 14px' }}>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 4px 0 0' }}>
+          <button onClick={onBack} style={{
+            background:'none', border:'none', cursor:'pointer', padding:'8px 14px',
+            color:'var(--primary)', fontSize:17, fontWeight:700, fontFamily:'inherit',
+            display:'flex', alignItems:'center', gap:4, flexShrink:0,
+          }}>
+            <Ic n="left" s={16} c="var(--primary)" />戻る
+          </button>
+          <div style={{ flex:1, textAlign:'center', paddingRight:70 }}>
+            <div style={{ fontSize:24, fontWeight:800, color:'var(--text)', lineHeight:1.3 }}>はじめに・使い方</div>
+            <div style={{ fontSize:16, color:'var(--text-sub)', marginTop:4 }}>アプリの概要と基本操作</div>
+          </div>
+        </div>
       </div>
+
       <div className="page-body" style={{ paddingBottom:48 }}>
 
         {/* ── 1. はじめに ── */}
         <div style={secTitle}>📋 はじめに</div>
-        <div className="card" style={{ fontSize:15, lineHeight:1.85, color:'var(--text)' }}>
-          <p style={{ margin:'0 0 12px' }}>
-            <strong>くらしあと</strong>は、離れて暮らす家族や同居する家族の生活の変化、気になった出来事を記録するためのアプリです。
+        <div className="card" style={{ fontSize:17, lineHeight:1.85, color:'var(--text)' }}>
+          <p style={{ margin:'0 0 10px' }}>
+            <strong>くらしあと</strong>は、家族の毎日の様子を記録し、暮らしの小さな変化に気づき、必要なときに医師やケアマネージャー（介護支援専門員）へ相談できるアプリです。
           </p>
-          <p style={{ margin:'0 0 12px' }}>
-            記録した内容は、医師・ケアマネジャー・地域包括支援センターなどへ相談するときに活用できます。
+          <p style={{ margin:0 }}>
+            記録した内容は、医師・ケアマネージャー（介護支援専門員）・地域包括支援センターなどへ相談するときに活用できます。
           </p>
-          <div style={{
-            background:'#FFF8E1', border:'1px solid #FFE082', borderRadius:10,
-            padding:'12px 14px', fontSize:13, color:'#795548', lineHeight:1.7,
-          }}>
-            ⚠️ このアプリは、病気や認知症などの<strong>診断を行うものではありません</strong>。
-          </div>
         </div>
 
-        {/* ── 2. このアプリについて ── */}
-        <div style={secTitle}>📱 このアプリについて</div>
-        <div className="card">
-          <div style={{ fontWeight:700, fontSize:14, color:'var(--primary)', marginBottom:8 }}>記録できること</div>
-          {[
-            '📝 日々の気づき記録',
-            '📅 月1回の生活変化チェック',
-            '📞 相談先・連絡先の登録',
-            '📄 相談メモの作成',
-            '🖨️ PDF保存・印刷',
-            '💾 バックアップ・復元',
-          ].map(item => (
-            <div key={item} style={{ padding:'7px 0', fontSize:14, color:'var(--text)', borderBottom:'1px solid var(--border)', lineHeight:1.5 }}>
-              {item}
+        {/* ── 2. このアプリでできること（アコーディオン）── */}
+        <div style={secTitle}>✅ このアプリでできること</div>
+        <div className="card" style={{ padding:0, overflow:'hidden' }}>
+          {GUIDE_FEATURES.map((f, i) => (
+            <div key={f.title} style={{ borderBottom: i < GUIDE_FEATURES.length - 1 ? '1px solid var(--border)' : 'none' }}>
+              {/* 見出し行 */}
+              <button
+                onClick={() => toggle(i)}
+                style={{
+                  width:'100%', display:'flex', alignItems:'center', gap:12,
+                  padding:'16px 16px', background:'none', border:'none', cursor:'pointer',
+                  textAlign:'left', fontFamily:'inherit',
+                }}
+              >
+                <span style={{ fontSize:22, flexShrink:0, width:30, textAlign:'center' }}>{f.icon}</span>
+                <span style={{ flex:1, fontSize:17, fontWeight:700, color:'var(--text)', lineHeight:1.4 }}>{f.title}</span>
+                <span style={{ fontSize:16, color:'var(--text-sub)', flexShrink:0, fontWeight:700 }}>{openIdx === i ? '▲' : '▼'}</span>
+              </button>
+              {/* 展開内容 */}
+              {openIdx === i && (
+                <div style={{ background:'#F0F7FA', padding:'14px 18px 18px', borderTop:'1px solid var(--border)' }}>
+                  <p style={{ margin:'0 0 12px', fontSize:17, color:'var(--text)', lineHeight:1.8 }}>{f.desc}</p>
+                  <div style={{ fontSize:16, fontWeight:700, color:'var(--text)', marginBottom:8 }}>【入力方法】</div>
+                  {f.steps.map((s, si) => (
+                    <div key={si} style={{ display:'flex', gap:10, marginBottom:8, alignItems:'flex-start' }}>
+                      <span style={{
+                        flexShrink:0, width:26, height:26, borderRadius:'50%',
+                        background:'var(--primary)', color:'#fff',
+                        display:'flex', alignItems:'center', justifyContent:'center',
+                        fontSize:14, fontWeight:800,
+                      }}>{si + 1}</span>
+                      <span style={{ fontSize:16, color:'var(--text)', lineHeight:1.7, paddingTop:3 }}>{s}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>
 
-        <div className="card" style={{ marginTop:12 }}>
-          <div style={{ fontWeight:700, fontSize:14, color:'var(--primary)', marginBottom:10 }}>データの保存</div>
-          <p style={{ margin:'0 0 8px', fontSize:14, color:'var(--text)', lineHeight:1.75 }}>
+        {/* ── 3. データの保存 ── */}
+        <div style={secTitle}>🔒 データの保存</div>
+        <div className="card">
+          <p style={{ margin:'0 0 10px', fontSize:17, color:'var(--text)', lineHeight:1.75 }}>
             📱 記録したデータは、<strong>お使いの端末内のみ</strong>に保存されます。
           </p>
-          <p style={{ margin:0, fontSize:14, color:'var(--text)', lineHeight:1.75 }}>
+          <p style={{ margin:0, fontSize:17, color:'var(--text)', lineHeight:1.75 }}>
             🔒 外部サーバーへ自動送信しません。
           </p>
         </div>
 
-        <div className="card" style={{ marginTop:12, background:'#FFF8E1', border:'1px solid #FFE082' }}>
-          <div style={{ fontWeight:700, fontSize:14, color:'#795548', marginBottom:8 }}>⚠️ 注意事項</div>
-          <p style={{ margin:0, fontSize:13, color:'#5D4037', lineHeight:1.8 }}>
-            このアプリは、医療・介護・福祉の相談を補助するための記録アプリです。<br />
-            体調や生活に急な変化がある場合は、アプリの記録だけで判断せず、医療機関・ケアマネジャー・地域包括支援センターなどへ相談してください。
+        {/* ── 4. このアプリの趣旨 ── */}
+        <div style={secTitle}>📌 このアプリの趣旨</div>
+        <div className="card" style={{ background:'#FFF8E1', border:'1.5px solid #FFE082' }}>
+          <p style={{ margin:0, fontSize:17, color:'#5D4037', lineHeight:1.85 }}>
+            このアプリは、医療・介護・福祉の相談を補助するための<strong>記録アプリ</strong>です。<br /><br />
+            体調や生活に急な変化がある場合は、アプリの記録だけで判断せず、医療機関・ケアマネージャー（介護支援専門員）・地域包括支援センターなどへ相談してください。
           </p>
         </div>
 
-        {/* ── 3. 使い方 ── */}
+        {/* ── 5. 使い方（アコーディオン）── */}
         <div style={secTitle}>🚀 使い方</div>
-        <div className="card">
-          {[
-            {
-              num:'①', title:'家族を登録する',
-              body:'設定画面の「家族一覧」から、記録する家族を登録します。',
-            },
-            {
-              num:'②', title:'気づいたことを記録する',
-              body:'ホーム画面の「気づき記録を追加」から、気になった出来事を記録します。\n例）薬の飲み忘れ・同じ話を繰り返す・転倒しそうになった・外出する回数が減った\n入力例をタップすると詳細メモへ追加できます。',
-            },
-            {
-              num:'③', title:'月に1回、生活変化チェックをする',
-              body:'「今月の生活変化チェック」から、この1か月の様子を振り返ります。気になった項目・全体的な印象・感じたことを記録します。',
-            },
-            {
-              num:'④', title:'記録を振り返る',
-              body:'下部タブの「記録」から、気づき記録と生活変化チェックを月ごとに確認できます。鉛筆マークから修正もできます。',
-            },
-            {
-              num:'⑤', title:'相談メモを作成する',
-              body:'下部タブの「相談メモ」から、医師やケアマネジャーへ見せる相談資料を作成できます。PDFとして保存・印刷できます。',
-            },
-            {
-              num:'⑥', title:'バックアップを作成する',
-              body:'設定画面の「バックアップを作成する」から定期的に保存してください。機種変更時は「バックアップから復元する」を利用できます。',
-            },
-          ].map((step, i) => (
-            <div key={step.num} style={{ ...stepStyle, ...(i === 5 ? { borderBottom:'none' } : {}) }}>
-              <div style={stepNumStyle}>{step.num}</div>
-              <div style={{ flex:1 }}>
-                <div style={{ fontSize:15, fontWeight:700, color:'var(--text)', marginBottom:5 }}>{step.title}</div>
-                <div style={{ fontSize:13, color:'var(--text-sub)', lineHeight:1.8, whiteSpace:'pre-line' }}>{step.body}</div>
+        <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+          {USAGE_STEPS.map((step, i) => {
+            const isOpen = openUsage === i;
+            return (
+              <div key={step.num} style={{
+                background:'#fff',
+                borderRadius:12,
+                border: isOpen ? '2px solid var(--primary)' : '1.5px solid var(--border)',
+                overflow:'hidden',
+                boxShadow: isOpen ? '0 2px 8px rgba(74,144,164,.15)' : '0 1px 3px rgba(0,0,0,.06)',
+              }}>
+                <button
+                  onClick={() => toggleUsage(i)}
+                  style={{
+                    width:'100%', display:'flex', alignItems:'center', gap:14,
+                    padding:'18px 16px', background: isOpen ? '#EAF5F8' : '#fff',
+                    border:'none', cursor:'pointer', textAlign:'left', fontFamily:'inherit',
+                    borderLeft: isOpen ? '4px solid var(--primary)' : '4px solid transparent',
+                  }}
+                >
+                  <span style={{
+                    flexShrink:0, width:34, height:34, borderRadius:'50%',
+                    background: isOpen ? 'var(--primary)' : '#D0E8EF',
+                    color: isOpen ? '#fff' : 'var(--primary)',
+                    display:'flex', alignItems:'center', justifyContent:'center',
+                    fontSize:16, fontWeight:800,
+                  }}>{step.num}</span>
+                  <span style={{ flex:1, fontSize:20, fontWeight:700, color:'#222222', lineHeight:1.4 }}>{step.title}</span>
+                  <span style={{ fontSize:18, color:'var(--primary)', flexShrink:0, fontWeight:800 }}>{isOpen ? '∧' : '∨'}</span>
+                </button>
+                {isOpen && (
+                  <div style={{ padding:'16px 18px 20px', borderTop:'1px solid var(--border)', background:'#F7FBFC' }}>
+                    <p style={{ margin:'0 0 14px', fontSize:18, color:'#222222', lineHeight:1.85 }}>{step.desc}</p>
+                    <div style={{ fontSize:17, fontWeight:800, color:'#222222', marginBottom:10 }}>【入力方法】</div>
+                    {step.steps.map((s, si) => (
+                      <div key={si} style={{ display:'flex', gap:12, marginBottom:10, alignItems:'flex-start' }}>
+                        <span style={{
+                          flexShrink:0, width:28, height:28, borderRadius:'50%',
+                          background:'var(--primary)', color:'#fff',
+                          display:'flex', alignItems:'center', justifyContent:'center',
+                          fontSize:15, fontWeight:800,
+                        }}>{si + 1}</span>
+                        <span style={{ fontSize:18, color:'#222222', lineHeight:1.75, paddingTop:3 }}>{s}</span>
+                      </div>
+                    ))}
+                    {step.note && (
+                      <div style={{ marginTop:12, padding:'10px 14px', background:'#fff', borderRadius:8, border:'1px solid #D0E8EF', fontSize:16, color:'#555555', lineHeight:1.75 }}>
+                        💡 {step.note}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* ── よくある質問 ── */}
         <div style={secTitle}>❓ よくある質問</div>
         <div className="card">
           {[
-            { q:'データはどこに保存されますか？',          a:'お使いの端末内に保存されます。' },
-            { q:'個人情報は外部へ送信されますか？',        a:'外部サーバーへ自動送信しません。' },
-            { q:'機種変更した場合はどうしますか？',        a:'事前にバックアップを作成し、新しい端末で復元してください。' },
-            { q:'このアプリで病気の判断はできますか？',    a:'できません。気になる変化がある場合は、医療・介護・福祉の専門職へ相談してください。' },
+            { q:'データはどこに保存されますか？',       a:'お使いの端末内に保存されます。' },
+            { q:'個人情報は外部へ送信されますか？',     a:'外部サーバーへ自動送信しません。' },
+            { q:'機種変更した場合はどうしますか？',     a:'事前にバックアップを作成し、新しい端末で復元してください。' },
+            { q:'このアプリで病気の判断はできますか？', a:'できません。気になる変化がある場合は、医療・介護・福祉の専門職へ相談してください。' },
           ].map((item, i) => (
             <div key={i} style={{ ...qaStyle, ...(i === 3 ? { borderBottom:'none' } : {}) }}>
-              <div style={{ fontSize:14, fontWeight:700, color:'var(--primary)', marginBottom:5 }}>Q. {item.q}</div>
-              <div style={{ fontSize:14, color:'var(--text-sub)', lineHeight:1.75 }}>A. {item.a}</div>
+              <div style={{ fontSize:17, fontWeight:700, color:'var(--primary)', marginBottom:6 }}>Q. {item.q}</div>
+              <div style={{ fontSize:16, color:'var(--text)', lineHeight:1.75 }}>A. {item.a}</div>
             </div>
           ))}
         </div>
@@ -2572,9 +2882,9 @@ function SettingsScreen({ persons, records, checkHistory, onAddPerson, onUpdateP
       <div className="page-header"><h1>設定</h1><p>家族情報・アプリ設定</p></div>
       <div className="page-body">
         <div className="card" style={{ background:'var(--primary-bg)', border:'none', boxShadow:'none' }}>
-          <div style={{ fontSize:13, color:'var(--primary-dark)', lineHeight:1.7 }}>
+          <div style={{ fontSize:16, color:'var(--primary-dark)', lineHeight:1.7 }}>
             <b>くらしあとについて</b><br/>
-            家族の生活変化や気になった出来事を記録し、医師・ケアマネジャー・地域包括支援センターなどへ相談するときに役立てるための記録アプリです。データはこのデバイスにのみ保存されます。
+            家族の生活変化や気になった出来事を記録し、医師・ケアマネージャー（介護支援専門員）・地域包括支援センターなどへ相談するときに役立てるための記録アプリです。データはこのデバイスにのみ保存されます。
           </div>
         </div>
 
@@ -2625,7 +2935,7 @@ function SettingsScreen({ persons, records, checkHistory, onAddPerson, onUpdateP
         {/* ── バックアップ ── */}
         <div className="section-title" style={{ marginTop:20 }}>バックアップ</div>
         <div className="card">
-          <div style={{ fontSize:13, color:'var(--text-sub)', lineHeight:1.65, marginBottom:14 }}>
+          <div style={{ fontSize:16, color:'var(--text)', lineHeight:1.65, marginBottom:16 }}>
             家族情報・気づき記録・生活変化チェック・相談先メモをJSONファイルに保存・復元できます。端末内のみで動作します。
           </div>
 
@@ -2651,7 +2961,7 @@ function SettingsScreen({ persons, records, checkHistory, onAddPerson, onUpdateP
               width:'100%', display:'flex', alignItems:'center', justifyContent:'center', gap:8,
               padding:'13px', borderRadius:12, marginBottom:10,
               border:'1.5px solid var(--primary)', background:'var(--primary-bg)',
-              color:'var(--primary)', fontSize:14, fontWeight:700, cursor:'pointer', fontFamily:'inherit',
+              color:'var(--primary)', fontSize:17, fontWeight:700, cursor:'pointer', fontFamily:'inherit',
             }}>
             💾 バックアップを作成する
           </button>
@@ -2661,7 +2971,7 @@ function SettingsScreen({ persons, records, checkHistory, onAddPerson, onUpdateP
             width:'100%', display:'flex', alignItems:'center', justifyContent:'center', gap:8,
             padding:'13px', borderRadius:12, boxSizing:'border-box',
             border:'1.5px solid var(--border)', background:'var(--surface)',
-            color:'var(--text)', fontSize:14, fontWeight:700, cursor:'pointer',
+            color:'var(--text)', fontSize:17, fontWeight:700, cursor:'pointer',
           }}>
             📂 バックアップから復元する
             <input type="file" accept=".json,application/json" style={{ display:'none' }}
@@ -2699,7 +3009,7 @@ function SettingsScreen({ persons, records, checkHistory, onAddPerson, onUpdateP
             style={{
               width:'100%', display:'flex', alignItems:'center', justifyContent:'space-between',
               padding:'16px', background:'none', border:'none', cursor:'pointer',
-              fontFamily:'inherit', fontSize:15, fontWeight:700, color:'var(--text)',
+              fontFamily:'inherit', fontSize:17, fontWeight:700, color:'var(--text)',
             }}>
             <span style={{ display:'flex', alignItems:'center', gap:10 }}>
               <span style={{ fontSize:22 }}>❓</span>
@@ -2717,8 +3027,8 @@ function SettingsScreen({ persons, records, checkHistory, onAddPerson, onUpdateP
             { label:'プライバシー',   value:'データは外部送信されません' },
           ].map(i => (
             <div key={i.label} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'11px 0', borderBottom:'1px solid var(--border)' }}>
-              <span style={{ fontSize:14, color:'var(--text)' }}>{i.label}</span>
-              <span style={{ fontSize:12, color:'var(--text-sub)' }}>{i.value}</span>
+              <span style={{ fontSize:17, color:'var(--text)' }}>{i.label}</span>
+              <span style={{ fontSize:15, color:'var(--text-sub)' }}>{i.value}</span>
             </div>
           ))}
           <div style={{ padding:'12px 0' }}>
@@ -2730,7 +3040,7 @@ function SettingsScreen({ persons, records, checkHistory, onAddPerson, onUpdateP
                   window.location.reload();
                 }
               }}
-              style={{ width:'100%', padding:'10px', borderRadius:10, border:'1.5px solid var(--border)', background:'var(--bg)', color:'var(--text-sub)', fontSize:13, cursor:'pointer', fontFamily:'inherit' }}>
+              style={{ width:'100%', padding:'13px', borderRadius:10, border:'1.5px solid var(--border)', background:'var(--bg)', color:'var(--text-sub)', fontSize:16, cursor:'pointer', fontFamily:'inherit' }}>
               🔄 サンプルデータでリセット
             </button>
           </div>
@@ -2751,6 +3061,8 @@ function App() {
   const [modal,       setModal]       = useState(null);
   const [checkTarget, setCheckTarget] = useState(null); /* 家族詳細からチェックを直接開始する対象 */
   const [deleteConfirmId, setDeleteConfirmId] = useState(null); /* 削除確認ダイアログ */
+  const [recordsPersonId, setRecordsPersonId] = useState(null); /* 記録画面の選択家族 */
+  const [onboarded, setOnboarded] = useState(() => !!localStorage.getItem('onboardingCompleted'));
   const [hintLoadError, setHintLoadError] = useState(false); /* JSON読み込み失敗フラグ */
   const [, forceHintUpdate] = useState(0); /* JSON読み込み完了後の再レンダリング用 */
 
@@ -2767,6 +3079,13 @@ function App() {
   useEffect(() => { save('mmn_checks',   checkHistory); }, [checkHistory]);
 
   const handleNav = s => {
+    if (s.startsWith('records_')) {
+      /* ホームの家族カードから → 記録画面 + その家族を選択 */
+      const pid = Number(s.split('_')[1]);
+      setRecordsPersonId(pid);
+      setScreen('records');
+      return;
+    }
     if (s.startsWith('family_')) { setScreen(s); return; }
     setScreen(s);
   };
@@ -2834,6 +3153,16 @@ function App() {
 
   const showNav = modal === null && !screen.startsWith('family_') && screen !== 'check';
 
+  /* ─ オンボーディング（初回のみ） ─ */
+  if (!onboarded) {
+    return (
+      <OnboardingScreen onStart={() => {
+        localStorage.setItem('onboardingCompleted', 'true');
+        setOnboarded(true);
+      }} />
+    );
+  }
+
   /* ─ modal: record form ─ */
   if (modal) {
     const initPid = modal.personId || null;
@@ -2880,7 +3209,13 @@ function App() {
                   onBack={() => { setCheckTarget(null); setScreen('home'); }}
                   onSave={(...args) => { setCheckTarget(null); saveCheck(...args); }} />;
       case 'records':
-        return <RecordsScreen persons={persons} records={records} onAddRecord={pid => setModal({ personId: pid })} onDeleteRecord={deleteRecord} onEditRecord={r => setModal({ personId: r.personId, initialRecord: r })} />;
+        return <RecordsScreen
+          persons={persons} records={records} checkHistory={checkHistory}
+          onAddRecord={pid => setModal({ personId: pid })}
+          onDeleteRecord={deleteRecord}
+          onEditRecord={r => setModal({ personId: r.personId, initialRecord: r })}
+          initialPersonId={recordsPersonId}
+        />;
       case 'report':
         return <ReportScreen persons={persons} records={records} checkHistory={checkHistory} />;
       case 'settings':
@@ -2904,8 +3239,8 @@ function App() {
       {hintLoadError && (
         <div style={{
           position:'fixed', top:0, left:0, right:0, zIndex:10000,
-          background:'#FFF3CD', color:'#856404', padding:'8px 16px',
-          fontSize:13, textAlign:'center', borderBottom:'1px solid #FFE69C',
+          background:'#FFF3CD', color:'#856404', padding:'10px 16px',
+          fontSize:15, textAlign:'center', borderBottom:'1px solid #FFE69C',
         }}>
           入力例を読み込めませんでした。詳細メモに直接入力してください。
         </div>
@@ -2936,16 +3271,16 @@ function App() {
             <div style={{ fontSize:18, fontWeight:800, color:'var(--text)', marginBottom:10, textAlign:'center' }}>
               🗑️ 記録を削除
             </div>
-            <div style={{ fontSize:14, color:'var(--text-sub)', lineHeight:1.7, textAlign:'center', marginBottom:24 }}>
+            <div style={{ fontSize:17, color:'var(--text)', lineHeight:1.7, textAlign:'center', marginBottom:24 }}>
               この記録を削除しますか？<br/>
-              <span style={{ fontSize:12, color:'var(--text-light)' }}>削除したデータは元に戻せません。</span>
+              <span style={{ fontSize:14, color:'var(--text-light)' }}>削除したデータは元に戻せません。</span>
             </div>
             <div style={{ display:'flex', gap:10 }}>
               <button
                 onClick={() => setDeleteConfirmId(null)}
                 style={{
-                  flex:1, padding:'12px 0', borderRadius:10, border:'1.5px solid var(--border)',
-                  background:'var(--bg)', color:'var(--text)', fontSize:15, fontWeight:600,
+                  flex:1, padding:'14px 0', borderRadius:10, border:'1.5px solid var(--border)',
+                  background:'var(--bg)', color:'var(--text)', fontSize:17, fontWeight:600,
                   cursor:'pointer', fontFamily:'inherit',
                 }}>
                 キャンセル
@@ -2953,8 +3288,8 @@ function App() {
               <button
                 onClick={confirmDeleteRecord}
                 style={{
-                  flex:1, padding:'12px 0', borderRadius:10, border:'none',
-                  background:'#D9534F', color:'#fff', fontSize:15, fontWeight:700,
+                  flex:1, padding:'14px 0', borderRadius:10, border:'none',
+                  background:'#D9534F', color:'#fff', fontSize:17, fontWeight:700,
                   cursor:'pointer', fontFamily:'inherit',
                 }}>
                 削除する
