@@ -1,0 +1,401 @@
+{
+  "version": 1,
+  "exportedAt": "2026-06-12T13:30:02.914Z",
+  "persons": [
+    {
+      "id": 1,
+      "name": "お父さん",
+      "relation": "父",
+      "emoji": "👨",
+      "checkInterval": "毎月",
+      "lastCheckDate": "2026-06-12",
+      "consultees": [
+        {
+          "id": 1001,
+          "type": "doctor",
+          "name": "青空内科クリニック",
+          "contact": "017-111-1111",
+          "memo": "高血圧で定期受診"
+        },
+        {
+          "id": 1002,
+          "type": "careman",
+          "name": "青森居宅介護支援事業所",
+          "contact": "017-222-2222",
+          "memo": "担当 ケアマネ山田"
+        },
+        {
+          "id": 1003,
+          "type": "chiiki",
+          "name": "青森中央地域包括支援センター",
+          "contact": "017-333-3333",
+          "memo": "認知症相談窓口"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "お母さん",
+      "relation": "母",
+      "emoji": "👩",
+      "checkInterval": "2週間ごと",
+      "lastCheckDate": "2026-06-12",
+      "consultees": [
+        {
+          "id": 2001,
+          "type": "doctor",
+          "name": "さくら整形外科",
+          "contact": "017-444-4444",
+          "memo": "膝痛で通院中"
+        },
+        {
+          "id": 2002,
+          "type": "careman",
+          "name": "みなみ居宅介護支援事業所",
+          "contact": "017-555-5555",
+          "memo": "担当 佐藤ケアマネ"
+        },
+        {
+          "id": 2003,
+          "type": "chiiki",
+          "name": "青森南地域包括支援センター",
+          "contact": "017-666-6666",
+          "memo": "介護予防相談"
+        }
+      ]
+    }
+  ],
+  "records": [
+    {
+      "id": 1781270752658,
+      "date": "2026-05-03",
+      "time": "22:25",
+      "personId": 1,
+      "cats": [
+        "薬の飲み忘れ"
+      ],
+      "memo": "薬カレンダーに昨日の薬が残っていた",
+      "place": "服薬・薬の確認",
+      "sceneId": "medicine"
+    },
+    {
+      "id": 1781270325491,
+      "date": "2026-06-04",
+      "time": "22:18",
+      "personId": 2,
+      "cats": [],
+      "memo": "テレビをつけたまま寝ていた\n",
+      "place": "居間",
+      "sceneId": "living"
+    },
+    {
+      "id": 1781270114870,
+      "date": "2026-06-01",
+      "time": "22:14",
+      "personId": 1,
+      "cats": [
+        "同じ話を繰り返す"
+      ],
+      "memo": "同じ話を何度も繰り返した",
+      "place": "居間",
+      "sceneId": "living"
+    },
+    {
+      "id": 1781270090590,
+      "date": "2026-06-12",
+      "time": "22:14",
+      "personId": 2,
+      "cats": [
+        "ゴミ出しができていないことがある",
+        "物をなくすことが増えた"
+      ],
+      "memo": "生活変化チェック実施。軽度の変化が見られます（2項目）",
+      "place": "",
+      "fromCheck": true
+    },
+    {
+      "id": 1781270083871,
+      "date": "2026-06-12",
+      "time": "22:14",
+      "personId": 1,
+      "cats": [
+        "薬の飲み忘れが増えた",
+        "お金の管理が不安"
+      ],
+      "memo": "生活変化チェック実施。軽度の変化が見られます（2項目）",
+      "place": "",
+      "fromCheck": true
+    },
+    {
+      "id": 1781107110776,
+      "date": "2026-06-10",
+      "time": "00:58",
+      "personId": 2,
+      "cats": [
+        "冷蔵庫に古い食べ物が多い",
+        "火の消し忘れがある"
+      ],
+      "memo": "生活変化チェック実施。軽度の変化が見られます（2項目）",
+      "place": "",
+      "fromCheck": true
+    },
+    {
+      "id": 1781107092296,
+      "date": "2026-06-10",
+      "time": "00:58",
+      "personId": 1,
+      "cats": [
+        "薬の飲み忘れが増えた",
+        "お金の管理が不安"
+      ],
+      "memo": "生活変化チェック実施。軽度の変化が見られます（2項目）",
+      "place": "",
+      "fromCheck": true
+    },
+    {
+      "id": 1781106936080,
+      "date": "2026-06-10",
+      "time": "00:55",
+      "personId": 1,
+      "cats": [
+        "薬の飲み忘れ"
+      ],
+      "memo": "薬を飲み忘れていた",
+      "place": "居間",
+      "sceneId": "living"
+    },
+    {
+      "id": 101,
+      "date": "2025-04-05",
+      "time": "09:30",
+      "personId": 1,
+      "sceneId": "kitchen",
+      "cats": [
+        "薬の飲み忘れ"
+      ],
+      "place": "台所",
+      "memo": "朝食後の薬が残っていた。一緒に確認して服用した。"
+    },
+    {
+      "id": 102,
+      "date": "2025-04-18",
+      "time": "14:00",
+      "personId": 1,
+      "sceneId": "living",
+      "cats": [
+        "同じ話を繰り返す"
+      ],
+      "place": "居間",
+      "memo": "同じ内容の話を30分で3回繰り返した。"
+    },
+    {
+      "id": 103,
+      "date": "2025-05-02",
+      "time": "10:15",
+      "personId": 1,
+      "sceneId": "entrance",
+      "cats": [
+        "その他"
+      ],
+      "place": "玄関",
+      "memo": "鍵を探していたが冷蔵庫の中にあった。"
+    },
+    {
+      "id": 104,
+      "date": "2025-05-15",
+      "time": "18:00",
+      "personId": 1,
+      "sceneId": "kitchen",
+      "cats": [
+        "薬の飲み忘れ"
+      ],
+      "place": "台所",
+      "memo": "夕食後の薬が残っていた。"
+    },
+    {
+      "id": 105,
+      "date": "2025-06-01",
+      "time": "13:20",
+      "personId": 1,
+      "sceneId": "outing",
+      "cats": [
+        "外出減少"
+      ],
+      "place": "外出先",
+      "memo": "スーパーから帰宅する際に迷ったと話していた。"
+    },
+    {
+      "id": 201,
+      "date": "2025-04-10",
+      "time": "11:00",
+      "personId": 2,
+      "sceneId": "kitchen",
+      "cats": [
+        "その他"
+      ],
+      "place": "台所",
+      "memo": "期限切れ食品が複数あった。"
+    },
+    {
+      "id": 202,
+      "date": "2025-04-25",
+      "time": "15:30",
+      "personId": 2,
+      "sceneId": "living",
+      "cats": [
+        "転倒"
+      ],
+      "place": "居間",
+      "memo": "立ち上がる際によろけた。"
+    },
+    {
+      "id": 203,
+      "date": "2025-05-20",
+      "time": "08:40",
+      "personId": 2,
+      "sceneId": "toilet",
+      "cats": [
+        "転倒"
+      ],
+      "place": "トイレ",
+      "memo": "手すりにつかまりながら立ち上がっていた。"
+    },
+    {
+      "id": 204,
+      "date": "2025-06-05",
+      "time": "18:00",
+      "personId": 2,
+      "sceneId": "bath",
+      "cats": [
+        "その他"
+      ],
+      "place": "浴室",
+      "memo": "最近はシャワーだけの日が増えている。"
+    },
+    {
+      "id": 205,
+      "date": "2025-06-08",
+      "time": "13:00",
+      "personId": 2,
+      "sceneId": "outing",
+      "cats": [
+        "外出減少"
+      ],
+      "place": "外出先",
+      "memo": "買い物に行く回数が減っている。"
+    }
+  ],
+  "checkHistory": [
+    {
+      "id": 1781270090591,
+      "personId": 2,
+      "date": "2026-06-12",
+      "checkedIds": [
+        "q3",
+        "q6"
+      ],
+      "count": 2,
+      "level": "low"
+    },
+    {
+      "id": 1781270083872,
+      "personId": 1,
+      "date": "2026-06-12",
+      "checkedIds": [
+        "q2",
+        "q8"
+      ],
+      "count": 2,
+      "level": "low"
+    },
+    {
+      "id": 1781107110777,
+      "personId": 2,
+      "date": "2026-06-10",
+      "checkedIds": [
+        "q4",
+        "q5"
+      ],
+      "count": 2,
+      "level": "low"
+    },
+    {
+      "id": 1781107092297,
+      "personId": 1,
+      "date": "2026-06-10",
+      "checkedIds": [
+        "q2",
+        "q8"
+      ],
+      "count": 2,
+      "level": "low"
+    },
+    {
+      "id": 301,
+      "personId": 1,
+      "date": "2025-04-20",
+      "checkedIds": [
+        "q1"
+      ],
+      "count": 1,
+      "level": "low"
+    },
+    {
+      "id": 302,
+      "personId": 1,
+      "date": "2025-05-18",
+      "checkedIds": [
+        "q1",
+        "q2"
+      ],
+      "count": 2,
+      "level": "low"
+    },
+    {
+      "id": 303,
+      "personId": 1,
+      "date": "2025-06-01",
+      "checkedIds": [
+        "q1",
+        "q2",
+        "q6",
+        "q7"
+      ],
+      "count": 4,
+      "level": "mid"
+    },
+    {
+      "id": 401,
+      "personId": 2,
+      "date": "2025-04-15",
+      "checkedIds": [
+        "q3"
+      ],
+      "count": 1,
+      "level": "low"
+    },
+    {
+      "id": 402,
+      "personId": 2,
+      "date": "2025-05-22",
+      "checkedIds": [
+        "q3",
+        "q7"
+      ],
+      "count": 2,
+      "level": "low"
+    },
+    {
+      "id": 403,
+      "personId": 2,
+      "date": "2025-06-08",
+      "checkedIds": [
+        "q3",
+        "q7",
+        "q8"
+      ],
+      "count": 3,
+      "level": "mid"
+    }
+  ]
+}
